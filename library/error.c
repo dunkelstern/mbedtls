@@ -148,6 +148,25 @@
 #include "mbedtls/xtea.h"
 #endif
 
+#if defined(MBEDTLS_KDF_C)
+#include "mbedtls/kdf.h"
+#endif
+
+#if defined(MBEDTLS_KDF1_C)
+#include "mbedtls/kdf1.h"
+#endif
+
+#if defined(MBEDTLS_KDF2_C)
+#include "mbedtls/kdf2.h"
+#endif
+
+#include <stdio.h>
+#include <string.h>
+
+#if defined(_MSC_VER) && !defined  snprintf && !defined(EFIX64) && \
+    !defined(EFI32)
+#define  snprintf  _snprintf
+#endif
 
 void mbedtls_strerror( int ret, char *buf, size_t buflen )
 {
@@ -476,6 +495,13 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
 #endif /* MBEDTLS_X509_USE_C || MBEDTLS_X509_CREATE_C */
         // END generated code
 
+        // START custom added code
+#if defined(MBEDTLS_KDF_C)
+        if( use_ret == -(MBEDTLS_ERR_KDF_BAD_INPUT_DATA) )
+            snprintf( buf, buflen, "KDF - Bad input parameters to function" );
+#endif /* MBEDTLS_KDF_C */
+        // END custom added code
+
         if( strlen( buf ) == 0 )
             mbedtls_snprintf( buf, buflen, "UNKNOWN ERROR CODE (%04X)", use_ret );
     }
@@ -673,6 +699,18 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
         mbedtls_snprintf( buf, buflen, "XTEA - The data input has an invalid length" );
 #endif /* MBEDTLS_XTEA_C */
     // END generated code
+
+    // START custom added code
+#if defined(MBEDTLS_KDF1_C)
+    if( use_ret == -(MBEDTLS_ERR_KDF1_BAD_INPUT_DATA) )
+        snprintf( buf, buflen, "KDF1 - Bad input parameters to function" );
+#endif /* MBEDTLS_KDF1_C */
+
+#if defined(MBEDTLS_KDF2_C)
+    if( use_ret == -(MBEDTLS_ERR_KDF2_BAD_INPUT_DATA) )
+        snprintf( buf, buflen, "KDF2 - Bad input parameters to function" );
+#endif /* MBEDTLS_KDF2_C */
+    // END custom added code
 
     if( strlen( buf ) != 0 )
         return;
