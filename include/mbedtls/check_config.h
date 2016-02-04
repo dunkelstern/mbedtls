@@ -532,7 +532,7 @@
 
 #if defined(MBEDTLS_KDF_C) && \
     ( !defined(MBEDTLS_KDF1_C) && !defined(MBEDTLS_KDF2_C) || !defined(MBEDTLS_MD_C))
-#error "POLARSSL_KDF_C defined, but not all prerequisites"
+#error "MBEDTLS_KDF_C defined, but not all prerequisites"
 #endif
 
 /*
