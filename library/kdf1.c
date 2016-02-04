@@ -78,7 +78,8 @@ int mbedtls_kdf1(const mbedtls_md_info_t *md_info, const unsigned char *input, s
     mbedtls_md_context_t md_ctx;
 
     // Initialize digest context
-    MBEDTLS_KDF1_TRY(mbedtls_md_init_ctx(&md_ctx, md_info));
+    mbedtls_md_init(&md_ctx);
+    MBEDTLS_KDF1_TRY(mbedtls_md_setup(&md_ctx, md_info, 0));
 
     // Get hash parameters
     hash_len = mbedtls_md_get_size(md_info);
