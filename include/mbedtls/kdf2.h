@@ -43,7 +43,7 @@
 
 #include "md.h"
 
-#define MBEDTLS_ERR_KDF2_BAD_INPUT_DATA             -0x0032 /**< Bad input parameters to function. */
+#define MBEDTLS_ERR_KDF2_BAD_INPUT_DATA             -0x0033 /**< Bad input parameters to function. */
 
 #ifdef __cplusplus
 extern "C" {
