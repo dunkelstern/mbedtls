@@ -54,7 +54,8 @@ extern "C" {
  * Key derivation function information.
  * Allows Key derivation functions to be called in a generic way.
  */
-struct mbedtls_kdf_info_t {
+struct mbedtls_kdf_info_t
+{
     /** Key derivation function identifier */
     mbedtls_kdf_type_t type;
 

@@ -49,7 +49,7 @@
 
 #include <string.h>
 
-#define MBEDTLS_KDF1_TRY(invocation) \
+#define KDF1_TRY(invocation) \
 do { \
     result = invocation; \
     if((result) < 0) { \
@@ -57,7 +57,7 @@ do { \
     } \
 } while (0)
 
-#define MBEDTLS_KDF1_CEIL(x,y) (1 + ((x - 1) / y))
+#define KDF1_CEIL(x,y) (1 + ((x - 1) / y))
 
 int mbedtls_kdf1(const mbedtls_md_info_t *md_info, const unsigned char *input, size_t ilen,
         unsigned char * output, size_t olen)
@@ -79,13 +79,13 @@ int mbedtls_kdf1(const mbedtls_md_info_t *md_info, const unsigned char *input, s
 
     // Initialize digest context
     mbedtls_md_init(&md_ctx);
-    MBEDTLS_KDF1_TRY(mbedtls_md_setup(&md_ctx, md_info, 0));
+    KDF1_TRY(mbedtls_md_setup(&md_ctx, md_info, 0));
 
     // Get hash parameters
     hash_len = mbedtls_md_get_size(md_info);
 
     // Get KDF parameters
-    counter_len = MBEDTLS_KDF1_CEIL(olen, hash_len);
+    counter_len = KDF1_CEIL(olen, hash_len);
 
     // Start hashing
     for(; counter < counter_len; ++counter) {
@@ -93,14 +93,14 @@ int mbedtls_kdf1(const mbedtls_md_info_t *md_info, const unsigned char *input, s
         counter_string[1] = (unsigned char)((counter >> 16) & 255);
         counter_string[2] = (unsigned char)((counter >> 8)) & 255;
         counter_string[3] = (unsigned char)(counter & 255);
-        MBEDTLS_KDF1_TRY(mbedtls_md_starts(&md_ctx));
-        MBEDTLS_KDF1_TRY(mbedtls_md_update(&md_ctx, input, ilen));
-        MBEDTLS_KDF1_TRY(mbedtls_md_update(&md_ctx, counter_string, 4));
+        KDF1_TRY(mbedtls_md_starts(&md_ctx));
+        KDF1_TRY(mbedtls_md_update(&md_ctx, input, ilen));
+        KDF1_TRY(mbedtls_md_update(&md_ctx, counter_string, 4));
         if (olen_actual + hash_len <= olen) {
-            MBEDTLS_KDF1_TRY(mbedtls_md_finish(&md_ctx, output + olen_actual));
+            KDF1_TRY(mbedtls_md_finish(&md_ctx, output + olen_actual));
             olen_actual += hash_len;
         } else {
-            MBEDTLS_KDF1_TRY(mbedtls_md_finish(&md_ctx, hash));
+            KDF1_TRY(mbedtls_md_finish(&md_ctx, hash));
             memcpy(output + olen_actual, hash, olen - olen_actual);
             olen_actual = olen;
         }
