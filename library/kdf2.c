@@ -63,9 +63,6 @@ do { \
 int mbedtls_kdf2(const mbedtls_md_info_t *md_info, const unsigned char *input, size_t ilen,
         unsigned char * output, size_t olen)
 {
-    if (md_info == NULL)
-        return( MBEDTLS_ERR_KDF2_BAD_INPUT_DATA );
-
     int result = 0;
     size_t counter = 1;
     size_t counter_len = 0;
@@ -77,6 +74,9 @@ int mbedtls_kdf2(const mbedtls_md_info_t *md_info, const unsigned char *input, s
     size_t olen_actual = 0;
 
     mbedtls_md_context_t md_ctx;
+
+    if (md_info == NULL)
+        return( MBEDTLS_ERR_KDF2_BAD_INPUT_DATA );
 
     // Initialize digest context
     mbedtls_md_init(&md_ctx);
