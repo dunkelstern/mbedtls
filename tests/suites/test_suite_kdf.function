@@ -34,8 +34,8 @@ void kdf_null_args( )
 
     TEST_ASSERT( mbedtls_kdf_info_from_string( NULL ) == NULL );
 
-    TEST_ASSERT( mbedtls_kdf( kdf_info, NULL, buf, 1, buf, 1 ) && MBEDTLS_ERR_KDF_BAD_INPUT_DATA );
-    TEST_ASSERT( mbedtls_kdf( NULL, md_info, buf, 1, buf, 1 ) && MBEDTLS_ERR_KDF_BAD_INPUT_DATA );
+    TEST_ASSERT( mbedtls_kdf( kdf_info, NULL, buf, 1, buf, 1 ) && MBEDTLS_ERR_KDF_BAD_INPUT_DATA != 0);
+    TEST_ASSERT( mbedtls_kdf( NULL, md_info, buf, 1, buf, 1 ) && MBEDTLS_ERR_KDF_BAD_INPUT_DATA  != 0);
 }
 /* END_CASE */
 
