@@ -96,6 +96,18 @@
 #include "mbedtls/hmac_drbg.h"
 #endif
 
+#if defined(MBEDTLS_KDF_C)
+#include "mbedtls/kdf.h"
+#endif
+
+#if defined(MBEDTLS_KDF1_C)
+#include "mbedtls/kdf1.h"
+#endif
+
+#if defined(MBEDTLS_KDF2_C)
+#include "mbedtls/kdf2.h"
+#endif
+
 #if defined(MBEDTLS_MD_C)
 #include "mbedtls/md.h"
 #endif
@@ -223,6 +235,11 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
         if( use_ret == -(MBEDTLS_ERR_ECP_SIG_LEN_MISMATCH) )
             mbedtls_snprintf( buf, buflen, "ECP - Signature is valid but shorter than the user-supplied length" );
 #endif /* MBEDTLS_ECP_C */
+
+#if defined(MBEDTLS_KDF_C)
+        if( use_ret == -(MBEDTLS_ERR_KDF_BAD_INPUT_DATA) )
+            mbedtls_snprintf( buf, buflen, "KDF - Bad input parameters to function" );
+#endif /* MBEDTLS_KDF_C */
 
 #if defined(MBEDTLS_MD_C)
         if( use_ret == -(MBEDTLS_ERR_MD_FEATURE_UNAVAILABLE) )
@@ -621,6 +638,16 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
     if( use_ret == -(MBEDTLS_ERR_HMAC_DRBG_ENTROPY_SOURCE_FAILED) )
         mbedtls_snprintf( buf, buflen, "HMAC_DRBG - The entropy source failed" );
 #endif /* MBEDTLS_HMAC_DRBG_C */
+
+#if defined(MBEDTLS_KDF1_C)
+    if( use_ret == -(MBEDTLS_ERR_KDF1_BAD_INPUT_DATA) )
+        mbedtls_snprintf( buf, buflen, "KDF1 - Bad input parameters to function" );
+#endif /* MBEDTLS_KDF1_C */
+
+#if defined(MBEDTLS_KDF2_C)
+    if( use_ret == -(MBEDTLS_ERR_KDF2_BAD_INPUT_DATA) )
+        mbedtls_snprintf( buf, buflen, "KDF2 - Bad input parameters to function" );
+#endif /* MBEDTLS_KDF2_C */
 
 #if defined(MBEDTLS_NET_C)
     if( use_ret == -(MBEDTLS_ERR_NET_SOCKET_FAILED) )

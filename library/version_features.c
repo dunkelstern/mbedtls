@@ -504,6 +504,15 @@ static const char *features[] = {
 #if defined(MBEDTLS_MD5_C)
     "MBEDTLS_MD5_C",
 #endif /* MBEDTLS_MD5_C */
+#if defined(MBEDTLS_KDF_C)
+    "MBEDTLS_KDF_C",
+#endif /* MBEDTLS_KDF_C */
+#if defined(MBEDTLS_KDF1_C)
+    "MBEDTLS_KDF1_C",
+#endif /* MBEDTLS_KDF1_C */
+#if defined(MBEDTLS_KDF2_C)
+    "MBEDTLS_KDF2_C",
+#endif /* MBEDTLS_KDF2_C */
 #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     "MBEDTLS_MEMORY_BUFFER_ALLOC_C",
 #endif /* MBEDTLS_MEMORY_BUFFER_ALLOC_C */
