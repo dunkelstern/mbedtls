@@ -2022,6 +2022,20 @@
 #define MBEDTLS_PK_WRITE_C
 
 /**
+ * \def MBEDTLS_PK_WRITE_PKCS8_C
+ *
+ * Add functions to write private key in the PKCS#8 structure.
+ *
+ * Module:  library/pkwrite.c
+ *
+ * Requires: MBEDTLS_PK_C, MBEDTLS_PK_WRITE_C
+ *
+ * Uncomment to be able use functions which write private key
+ * in the PKCS#8 structure.
+ */
+#define MBEDTLS_PK_WRITE_PKCS8_C
+
+/**
  * \def MBEDTLS_PKCS5_C
  *
  * Enable PKCS#5 functions.

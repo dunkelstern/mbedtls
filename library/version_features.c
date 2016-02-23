@@ -531,6 +531,9 @@ static const char *features[] = {
 #if defined(MBEDTLS_PK_WRITE_C)
     "MBEDTLS_PK_WRITE_C",
 #endif /* MBEDTLS_PK_WRITE_C */
+#if defined(MBEDTLS_PK_WRITE_PKCS8_C)
+    "MBEDTLS_PK_WRITE_PKCS8_C",
+#endif /* MBEDTLS_PK_WRITE_PKCS8_C */
 #if defined(MBEDTLS_PKCS5_C)
     "MBEDTLS_PKCS5_C",
 #endif /* MBEDTLS_PKCS5_C */
