@@ -80,6 +80,10 @@
 #include "mbedtls/dhm.h"
 #endif
 
+#if defined(MBEDTLS_ECIES_C)
+#include "mbedtls/ecies.h"
+#endif
+
 #if defined(MBEDTLS_ECP_C)
 #include "mbedtls/ecp.h"
 #endif
@@ -216,6 +220,17 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
         if( use_ret == -(MBEDTLS_ERR_DHM_FILE_IO_ERROR) )
             mbedtls_snprintf( buf, buflen, "DHM - Read/write of file failed" );
 #endif /* MBEDTLS_DHM_C */
+
+#if defined(MBEDTLS_ECIES_C)
+        if( use_ret == -(MBEDTLS_ERR_ECIES_BAD_INPUT_DATA) )
+            mbedtls_snprintf( buf, buflen, "ECIES - Bad input parameters to function" );
+        if( use_ret == -(MBEDTLS_ERR_ECIES_OUTPUT_TOO_SMALL) )
+            mbedtls_snprintf( buf, buflen, "ECIES - Output buffer too small" );
+        if( use_ret == -(MBEDTLS_ERR_ECIES_MALFORMED_DATA) )
+            mbedtls_snprintf( buf, buflen, "ECIES - Encrypted data is malformed" );
+        if( use_ret == -(MBEDTLS_ERR_ECIES_ALLOC_FAILED) )
+            mbedtls_snprintf( buf, buflen, "ECIES - Memory allocation failed" );
+#endif /* MBEDTLS_ECIES_C */
 
 #if defined(MBEDTLS_ECP_C)
         if( use_ret == -(MBEDTLS_ERR_ECP_BAD_INPUT_DATA) )

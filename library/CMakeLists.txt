@@ -59,6 +59,8 @@ set(src_crypto
     kdf1.c
     kdf2.c
     kdf_wrap.c
+    ecies.c
+    ecies_envelope.c
 )
 
 set(src_x509

@@ -535,6 +535,16 @@
 #error "MBEDTLS_KDF_C defined, but not all prerequisites"
 #endif
 
+#if defined(MBEDTLS_ECIES_C) &&        \
+    ( !defined(MBEDTLS_ECP_C)    ||    \
+      !defined(MBEDTLS_ECDH_C)   ||    \
+      !defined(MBEDTLS_CIPHER_C) ||    \
+      !defined(MBEDTLS_MD_C)     ||    \
+      !defined(MBEDTLS_OID_C)    ||    \
+      !defined(MBEDTLS_KDF_C) )
+#error "MBEDTLS_ECIES_C defined, but not all prerequisites"
+#endif
+
 /*
  * Avoid warning from -pedantic. This is a convenient place for this
  * workaround since this is included by every single file before the

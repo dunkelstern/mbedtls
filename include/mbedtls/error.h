@@ -79,6 +79,7 @@
  * PK        3   14 (Started from top)
  * RSA       4   9
  * ECP       4   8 (Started from top)
+ * ECIES     4   4 (Started from top after ECP)
  * MD        5   4
  * KDF       5   1 (Started from top)
  * CIPHER    6   6

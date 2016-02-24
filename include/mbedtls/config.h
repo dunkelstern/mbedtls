@@ -2151,6 +2151,18 @@
 #define MBEDTLS_RSA_C
 
 /**
+ * \def MBEDTLS_ECIES_C
+ *
+ * Enable the elliptic curve ECIES algorithms.
+ *
+ * Module:  library/ecies.c
+ *
+ * Requires: MBEDTLS_PK_C, MBEDTLS_ECDH_C, MBEDTLS_CIPHER_C,
+ *           MBEDTLS_MD_C, MBEDTLS_KDF_C, MBEDTLS_OID_C
+ */
+#define MBEDTLS_ECIES_C
+
+/**
  * \def MBEDTLS_SHA1_C
  *
  * Enable the SHA1 cryptographic hash algorithm.
