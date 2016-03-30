@@ -67,8 +67,6 @@ set(src_crypto
     ed25519/sha512.c
     ed25519/sign.c
     ed25519/verify.c
-    ed25519/key_exchange.c
-    ed25519/add_scalar.c
     ed25519/curve25519.c
 )
 
