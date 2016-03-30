@@ -64,7 +64,9 @@ OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
 		timing.o	version.o			\
 		version_features.o		xtea.o	\
 		kdf.o kdf1.o kdf2.o kdf_wrap.o	\
-		ecies.o	ecies_envelope.o
+		ecies.o	ecies_envelope.o	\
+		ed25519/fe.o	ed25519/ge.o	ed25519/sc.o	ed25519/sha512.o	\
+		ed25519/sign.o  ed25519/verify.o	ed25519/curve25519.o
 
 OBJS_X509=	certs.o		pkcs11.o	x509.o		\
 		x509_create.o	x509_crl.o	x509_crt.o	\
@@ -160,11 +162,11 @@ libmbedcrypto.dll: $(OBJS_CRYPTO)
 
 .c.o:
 	echo "  CC    $<"
-	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -c $<
+	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -c -o $@ $<
 
 clean:
 ifndef WINDOWS
-	rm -f *.o libmbed*
+	rm -f *.o ed25519/*o libmbed*
 else
-	del /Q /F *.o libmbed*
+	del /Q /F *.o ed25519\*.o libmbed*
 endif
