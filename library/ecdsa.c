@@ -162,7 +162,7 @@ int mbedtls_ecdsa_sign( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
     mbedtls_ecp_point R;
     mbedtls_mpi k, e, t;
 
-    /* Fail cleanly on curves such as Curve25519 that can't be used for ECDSA */
+    /* Use EdDSA on curves such as Curve25519 */
     if( grp->N.p == NULL )
         return mbedtls_ecdsa_sign_curve25519(grp, r, s, d, buf, blen, f_rng, p_rng);
 
@@ -292,7 +292,7 @@ int mbedtls_ecdsa_verify( mbedtls_ecp_group *grp,
     mbedtls_ecp_point_init( &R );
     mbedtls_mpi_init( &e ); mbedtls_mpi_init( &s_inv ); mbedtls_mpi_init( &u1 ); mbedtls_mpi_init( &u2 );
 
-    /* Fail cleanly on curves such as Curve25519 that can't be used for ECDSA */
+    /* Use EdDSA on curves such as Curve25519 */
     if( grp->N.p == NULL )
         return mbedtls_ecdsa_verify_curve25519( grp, buf, blen, Q, r, s );
 
