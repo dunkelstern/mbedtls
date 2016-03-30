@@ -522,6 +522,10 @@ static const oid_ecp_grp_t oid_ecp_grp[] =
     },
 #endif /* MBEDTLS_ECP_DP_BP512R1_ENABLED */
     {
+        { ADD_LEN( MBEDTLS_OID_EC_GRP_CURVE25519 ),   "curve25519","curve25519" },
+        MBEDTLS_ECP_DP_CURVE25519,
+    },
+    {
         { NULL, 0, NULL, NULL },
         MBEDTLS_ECP_DP_NONE,
     },
