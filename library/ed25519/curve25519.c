@@ -5,13 +5,6 @@
 #include "ed25519.h"
 #include "curve25519.h"
 
-void ed25519_sign(unsigned char *signature, const unsigned char *message,
-                  size_t message_len, const unsigned char *public_key,
-                  const unsigned char *private_key);
-
-int ed25519_verify(const unsigned char *signature, const unsigned char *message,
-                   size_t message_len, const unsigned char *public_key);
-
 int curve25519_sign(unsigned char* signature,
                     const unsigned char* private_key,
                     const unsigned char* msg, const unsigned long msg_len)
