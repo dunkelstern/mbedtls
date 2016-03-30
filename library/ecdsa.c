@@ -84,7 +84,7 @@ static void reverse_bytes(unsigned char *first, unsigned char *last) {
  * Compute Ed25519 signature of a given message (http://ed25519.cr.yp.to/ed25519-20110926.pdf)
  * Use Curve25519 keypair as base
  */
-int mbedtls_ecdsa_sign_curve25519( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
+static int mbedtls_ecdsa_sign_curve25519( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
                 const mbedtls_mpi *d, const unsigned char *msg, size_t msg_len,
                 int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 {
@@ -116,7 +116,7 @@ cleanup:
  * Verify Ed25519 signature of a given message (http://ed25519.cr.yp.to/ed25519-20110926.pdf)
  * Use Curve25519 keypair as base
  */
-int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
+static int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
                   const unsigned char *msg, size_t msg_len,
                   const mbedtls_ecp_point *Q, const mbedtls_mpi *r, const mbedtls_mpi *s)
 {
