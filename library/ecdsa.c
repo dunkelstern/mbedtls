@@ -67,12 +67,16 @@ cleanup:
     return( ret );
 }
 
-// Swap given bytes
+/*
+ * Swap given bytes
+ */
 static void swap(unsigned char *a, unsigned char *b) {
     unsigned char t = *a; *a = *b; *b = t;
 }
 
-// Reverse bytes in range [first, last)
+/*
+ * Reverse bytes in range [first, last)
+ */
 static void reverse_bytes(unsigned char *first, unsigned char *last) {
     while ((first!=last)&&(first!=--last)) {
         swap (first,last);
