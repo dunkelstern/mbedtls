@@ -60,6 +60,21 @@ set(src_crypto
     version.c
     version_features.c
     xtea.c
+    kdf.c
+    kdf1.c
+    kdf2.c
+    kdf_wrap.c
+    ecies.c
+    ecies_envelope.c
+    ed25519/fe.c
+    ed25519/ge.c
+    ed25519/sc.c
+    ed25519/sha512.c
+    ed25519/sign.c
+    ed25519/verify.c
+    ed25519/key_exchange.c
+    ed25519/add_scalar.c
+    ed25519/curve25519.c
 )
 
 set(src_x509
