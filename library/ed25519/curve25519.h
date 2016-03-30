@@ -7,10 +7,10 @@
  *
  * Use ESDSA to derive signature
  *
- * @param signature[64] - derived signature (unsigned binary data, low endian)
- * @param private_key[32] - Curve25519 private key (unsigned binary data, low endian)
- * @param msg [description]
- * @param msg_len [description]
+ * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
+ * @param private_key - Curve25519 private key (unsigned binary data, low endian, 32 byte)
+ * @param msg - message to be signed
+ * @param msg_len - message length
  * @return 0 on success
  */
 int curve25519_sign(unsigned char* signature,
@@ -22,10 +22,10 @@ int curve25519_sign(unsigned char* signature,
  *
  * Use ESDSA to verify signature
  *
- * @param signature[64] [description]
- * @param public_key[32] [description]
- * @param msg [description]
- * @param msg_len [description]
+ * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
+ * @param public_key - Curve25519 public key (unsigned binary data, low endian, 32 byte)
+ * @param msg - message to be verified
+ * @param msg_len - message length
  * @return 0 on success
  */
 int curve25519_verify(const unsigned char* signature,
