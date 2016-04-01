@@ -7,6 +7,17 @@
  *
  * Use ESDSA to derive signature
  *
+ * @param public_key - Curve25519 public key (unsigned binary data, low endian, 32 byte)
+ * @param private_key - Curve25519 private key (unsigned binary data, low endian, 32 byte)
+ * @return 0 on success
+ */
+int curve25519_getpub(unsigned char* public_key, const unsigned char* private_key);
+
+/**
+ * @brief Create signature based on the Curve25519 montgomery curve
+ *
+ * Use ESDSA to derive signature
+ *
  * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
  * @param private_key - Curve25519 private key (unsigned binary data, low endian, 32 byte)
  * @param msg - message to be signed
