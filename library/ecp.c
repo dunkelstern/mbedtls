@@ -169,62 +169,6 @@ static const mbedtls_ecp_curve_info ecp_supported_curves[] =
 
 static mbedtls_ecp_group_id ecp_supported_grp_id[ECP_NB_CURVES];
 
-
-/*
- * Swap given bytes
- */
-static void swap(unsigned char *a, unsigned char *b) {
-    unsigned char t = *a; *a = *b; *b = t;
-}
-
-/*
- * Reverse bytes in range [first, last)
- */
-static void reverse_bytes(unsigned char *first, unsigned char *last) {
-    while ((first!=last)&&(first!=--last)) {
-        swap (first,last);
-        ++first;
-    }
-}
-
-/*
- * Calculate Curve25519 public key
- */
-static int mbedtls_curve25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
-             const mbedtls_mpi *m, const mbedtls_ecp_point *P,
-             int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
-{
-    int ret;
-    unsigned char public_key[32];
-    unsigned char private_key[32];
-
-    (void) grp;
-    (void) P;
-    (void) f_rng;
-    (void) p_rng;
-
-    // m -> m(BE) -> m(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( m, private_key, sizeof(private_key) ) );
-    reverse_bytes( private_key, private_key + sizeof( private_key ) );
-
-    // compute public key
-    if( curve25519_getpub( public_key, private_key ) )
-    {
-        ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
-        goto cleanup;
-    }
-
-    // R(LE) -> R(BE) -> R
-    reverse_bytes( public_key, public_key + sizeof( public_key ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( &R->X, public_key, sizeof( public_key ) ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_lset( &R->Z, 1 ) );
-    mbedtls_mpi_free( &R->Y );
-
-cleanup:
-
-    return( ret );
-}
-
 /*
  * List of supported curves and associated info
  */
@@ -1720,6 +1664,61 @@ static int ecp_mul_mxz( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
 
 cleanup:
     mbedtls_ecp_point_free( &RP ); mbedtls_mpi_free( &PX );
+
+    return( ret );
+}
+
+/*
+ * Swap given bytes
+ */
+static void swap(unsigned char *a, unsigned char *b) {
+    unsigned char t = *a; *a = *b; *b = t;
+}
+
+/*
+ * Reverse bytes in range [first, last)
+ */
+static void reverse_bytes(unsigned char *first, unsigned char *last) {
+    while ((first!=last)&&(first!=--last)) {
+        swap (first,last);
+        ++first;
+    }
+}
+
+/*
+ * Calculate Curve25519 public key
+ */
+static int mbedtls_curve25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
+             const mbedtls_mpi *m, const mbedtls_ecp_point *P,
+             int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
+{
+    int ret;
+    unsigned char public_key[32];
+    unsigned char private_key[32];
+
+    (void) grp;
+    (void) P;
+    (void) f_rng;
+    (void) p_rng;
+
+    // m -> m(BE) -> m(LE)
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( m, private_key, sizeof(private_key) ) );
+    reverse_bytes( private_key, private_key + sizeof( private_key ) );
+
+    // compute public key
+    if( curve25519_getpub( public_key, private_key ) )
+    {
+        ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
+        goto cleanup;
+    }
+
+    // R(LE) -> R(BE) -> R
+    reverse_bytes( public_key, public_key + sizeof( public_key ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( &R->X, public_key, sizeof( public_key ) ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_lset( &R->Z, 1 ) );
+    mbedtls_mpi_free( &R->Y );
+
+cleanup:
 
     return( ret );
 }
