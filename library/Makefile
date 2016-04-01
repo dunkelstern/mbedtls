@@ -83,7 +83,7 @@ OBJS_TLS=	debug.o		net_sockets.o		\
 
 OBJS_ED25519=	ed25519/fe.o	ed25519/ge.o	ed25519/sc.o	\
 		ed25519/sha512.o	ed25519/sign.o	ed25519/verify.o	\
-		ed25519/curve25519.o
+		ed25519/key_exchange.o	ed25519/curve25519.o
 
 
 .SILENT:

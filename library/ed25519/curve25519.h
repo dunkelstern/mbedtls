@@ -32,5 +32,16 @@ int curve25519_verify(const unsigned char* signature,
                       const unsigned char* public_key,
                       const unsigned char* msg, const unsigned long msg_len);
 
+/**
+ * @brief Compute shared secret based on the Curve25519 montgomery curve
+ *
+ * @param shared_secret - computed shared secret (unsigned binary data, low endian, 32 byte)
+ * @param public_key - Curve25519 public key from other party (unsigned binary data, low endian, 32 byte)
+ * @param private_key - Curve25519 our private key (unsigned binary data, low endian, 32 byte)
+ * @return 0 on success
+ */
+int curve25519_key_exchange(unsigned char *shared_secret,
+                            const unsigned char *public_key,
+                            const unsigned char *private_key);
 
 #endif /* CURVE_25519_H */
