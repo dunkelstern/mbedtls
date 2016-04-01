@@ -186,7 +186,7 @@ static void reverse_bytes(unsigned char *first, unsigned char *last) {
 /*
  * Calculate Curve25519 public key
  */
-int mbedtls_curve25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
+static int mbedtls_curve25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
              const mbedtls_mpi *m, const mbedtls_ecp_point *P,
              int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 {
