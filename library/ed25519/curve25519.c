@@ -73,3 +73,31 @@ int curve25519_verify(const unsigned char* signature,
      */
     return ed25519_verify(verify_buf, msg, msg_len, ed_public_key_point);
 }
+
+int curve25519_key_exchange(unsigned char *shared_secret,
+                            const unsigned char *public_key,
+                            const unsigned char *private_key)
+{
+    fe mont_x, mont_x_minus_one, mont_x_plus_one, inv_mont_x_plus_one;
+    fe one;
+    fe ed_y;
+    unsigned char ed_public_key[32];
+
+    /*
+     * Step 1. Convert the Curve25519 public key into an Ed25519 public key
+     */
+    fe_frombytes(mont_x, public_key);
+    fe_1(one);
+    fe_sub(mont_x_minus_one, mont_x, one);
+    fe_add(mont_x_plus_one, mont_x, one);
+    fe_invert(inv_mont_x_plus_one, mont_x_plus_one);
+    fe_mul(ed_y, mont_x_minus_one, inv_mont_x_plus_one);
+    fe_tobytes(ed_public_key, ed_y);
+
+    /*
+     * Step 2. Compute shared secred
+     */
+    ed25519_key_exchange(shared_secret, ed_public_key, private_key);
+    return 0;
+}
+

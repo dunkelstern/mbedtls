@@ -94,6 +94,7 @@ set(src_ed25519
     ed25519/sha512.c
     ed25519/sign.c
     ed25519/verify.c
+    ed25519/key_exchange.c
     ed25519/curve25519.c
 )
 
