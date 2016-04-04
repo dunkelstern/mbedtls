@@ -1656,7 +1656,7 @@ static int mbedtls_curve25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point 
     mbedtls_mpi_free( &R->Y );
 
 cleanup:
-
+    mbedtls_zeroize( private_key, sizeof( private_key ) );
     return( ret );
 }
 

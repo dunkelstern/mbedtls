@@ -44,6 +44,11 @@
 
 #include "ed25519/curve25519.h"
 
+/* Implementation that should never be optimized out by the compiler */
+static void mbedtls_zeroize( void *v, size_t n ) {
+    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
+}
+
 /*
  * Derive a suitable integer for group grp from a buffer of length len
  * SEC1 4.1.3 step 5 aka SEC1 4.1.4 step 3
@@ -113,6 +118,7 @@ static int mbedtls_ecdsa_sign_curve25519( mbedtls_ecp_group *grp, mbedtls_mpi *r
     MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature + 32, 32 ) );
 
 cleanup:
+    mbedtls_zeroize( private_key, sizeof( private_key ) );
     return( ret );
 }
 
