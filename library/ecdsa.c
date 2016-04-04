@@ -168,9 +168,12 @@ int mbedtls_ecdsa_sign( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
     mbedtls_ecp_point R;
     mbedtls_mpi k, e, t;
 
-    /* Use EdDSA on curves such as Curve25519 */
-    if( grp->N.p == NULL )
-        return mbedtls_ecdsa_sign_curve25519(grp, r, s, d, buf, blen, f_rng, p_rng);
+    /* Use EdDSA on curve Curve25519 */
+    if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
+        return mbedtls_ecdsa_sign_curve25519( grp, r, s, d, buf, blen, f_rng, p_rng );
+    /* Fail cleanly on montgomery curves that can't be used for ECDSA and EdDSA */
+    else if( grp->N.p == NULL )
+        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
     mbedtls_ecp_point_init( &R );
     mbedtls_mpi_init( &k ); mbedtls_mpi_init( &e ); mbedtls_mpi_init( &t );
@@ -298,9 +301,13 @@ int mbedtls_ecdsa_verify( mbedtls_ecp_group *grp,
     mbedtls_ecp_point_init( &R );
     mbedtls_mpi_init( &e ); mbedtls_mpi_init( &s_inv ); mbedtls_mpi_init( &u1 ); mbedtls_mpi_init( &u2 );
 
-    /* Use EdDSA on curves such as Curve25519 */
-    if( grp->N.p == NULL )
+    /* Use EdDSA on curve Curve25519 */
+    if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
         return mbedtls_ecdsa_verify_curve25519( grp, buf, blen, Q, r, s );
+    /* Fail cleanly on montgomery curves that can't be used for ECDSA and EdDSA */
+    else if( grp->N.p == NULL )
+        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
+
 
     /*
      * Step 1: make sure r and s are in range 1..n-1
