@@ -1,3 +1,6 @@
+#include "config.h"
+
+#if defined(ED25519_ENABLED)
 #include <string.h>
 
 #include "fe.h"
@@ -131,4 +134,4 @@ int curve25519_key_exchange(unsigned char *shared_secret,
     ed25519_key_exchange(shared_secret, ed_public_key, private_key);
     return 0;
 }
-
+#endif /* ED25519_ENABLED */

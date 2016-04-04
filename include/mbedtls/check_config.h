@@ -545,6 +545,10 @@
 #error "MBEDTLS_ECIES_C defined, but not all prerequisites"
 #endif
 
+#if defined(MBEDTLS_ED25519_C) && !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED)
+#error "MBEDTLS_ED25519_C defined, but not all prerequisites"
+#endif
+
 /*
  * Avoid warning from -pedantic. This is a convenient place for this
  * workaround since this is included by every single file before the

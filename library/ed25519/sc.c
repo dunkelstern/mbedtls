@@ -1,3 +1,6 @@
+#include "config.h"
+
+#if defined(ED25519_ENABLED)
 #include "fixedint.h"
 #include "sc.h"
 
@@ -18,7 +21,7 @@ static uint64_t load_4(const unsigned char *in) {
     result |= ((uint64_t) in[1]) << 8;
     result |= ((uint64_t) in[2]) << 16;
     result |= ((uint64_t) in[3]) << 24;
-    
+
     return result;
 }
 
@@ -773,7 +776,7 @@ void sc_muladd(unsigned char *s, const unsigned char *a, const unsigned char *b,
     carry10 = s10 >> 21;
     s11 += carry10;
     s10 -= carry10 << 21;
-    
+
     s[0] = (unsigned char) (s0 >> 0);
     s[1] = (unsigned char) (s0 >> 8);
     s[2] = (unsigned char) ((s0 >> 16) | (s1 << 5));
@@ -807,3 +810,4 @@ void sc_muladd(unsigned char *s, const unsigned char *a, const unsigned char *b,
     s[30] = (unsigned char) (s11 >> 9);
     s[31] = (unsigned char) (s11 >> 17);
 }
+#endif /* ED25519_ENABLED */

@@ -42,12 +42,9 @@
 #include "mbedtls/hmac_drbg.h"
 #endif
 
+#if defined(MBEDTLS_ED25519_C)
 #include "ed25519/curve25519.h"
-
-/* Implementation that should never be optimized out by the compiler */
-static void mbedtls_zeroize( void *v, size_t n ) {
-    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
-}
+#endif /* MBEDTLS_ED25519_C */
 
 /*
  * Derive a suitable integer for group grp from a buffer of length len
@@ -70,6 +67,13 @@ static int derive_mpi( const mbedtls_ecp_group *grp, mbedtls_mpi *x,
 
 cleanup:
     return( ret );
+}
+
+
+#if defined(MBEDTLS_ED25519_C)
+/* Implementation that should never be optimized out by the compiler */
+static void mbedtls_zeroize( void *v, size_t n ) {
+    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
 }
 
 /*
@@ -155,6 +159,7 @@ static int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
 cleanup:
     return( ret );
 }
+#endif /* MBEDTLS_ED25519_C */
 
 /*
  * Compute ECDSA signature of a hashed message (SEC1 4.1.3)
@@ -168,11 +173,14 @@ int mbedtls_ecdsa_sign( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
     mbedtls_ecp_point R;
     mbedtls_mpi k, e, t;
 
+#if defined(MBEDTLS_ED25519_C)
     /* Use EdDSA on curve Curve25519 */
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
         return mbedtls_ecdsa_sign_curve25519( grp, r, s, d, buf, blen, f_rng, p_rng );
-    /* Fail cleanly on montgomery curves that can't be used for ECDSA and EdDSA */
-    else if( grp->N.p == NULL )
+    else
+#endif /* MBEDTLS_ED25519_C */
+    /* Fail cleanly on curves such as Curve25519 that can't be used for ECDSA */
+    if( grp->N.p == NULL )
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
     mbedtls_ecp_point_init( &R );
@@ -301,11 +309,14 @@ int mbedtls_ecdsa_verify( mbedtls_ecp_group *grp,
     mbedtls_ecp_point_init( &R );
     mbedtls_mpi_init( &e ); mbedtls_mpi_init( &s_inv ); mbedtls_mpi_init( &u1 ); mbedtls_mpi_init( &u2 );
 
+#if defined(MBEDTLS_ED25519_C)
     /* Use EdDSA on curve Curve25519 */
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
         return mbedtls_ecdsa_verify_curve25519( grp, buf, blen, Q, r, s );
-    /* Fail cleanly on montgomery curves that can't be used for ECDSA and EdDSA */
-    else if( grp->N.p == NULL )
+    else
+#endif /* MBEDTLS_ED25519_C */
+    /* Fail cleanly on curves such as Curve25519 that can't be used for ECDSA */
+    if( grp->N.p == NULL )
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
 

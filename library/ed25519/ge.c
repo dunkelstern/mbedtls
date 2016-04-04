@@ -1,3 +1,6 @@
+#include "config.h"
+
+#if defined(ED25519_ENABLED)
 #include "ge.h"
 #include "precomp_data.h"
 
@@ -440,7 +443,7 @@ r = p - q
 
 void ge_sub(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q) {
     fe t0;
-    
+
     fe_add(r->X, p->Y, p->X);
     fe_sub(r->Y, p->Y, p->X);
     fe_mul(r->Z, r->X, q->YminusX);
@@ -465,3 +468,4 @@ void ge_tobytes(unsigned char *s, const ge_p2 *h) {
     fe_tobytes(s, y);
     s[31] ^= fe_isnegative(x) << 7;
 }
+#endif /* ED25519_ENABLED */

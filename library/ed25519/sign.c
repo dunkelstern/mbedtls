@@ -1,3 +1,6 @@
+#include "config.h"
+
+#if defined(ED25519_ENABLED)
 #include "ed25519.h"
 #include "sha512.h"
 #include "ge.h"
@@ -29,3 +32,4 @@ void ed25519_sign(unsigned char *signature, const unsigned char *message, size_t
     sc_reduce(hram);
     sc_muladd(signature + 32, hram, private_key, r);
 }
+#endif /* ED25519_ENABLED */
