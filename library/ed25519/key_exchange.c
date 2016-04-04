@@ -1,6 +1,14 @@
 #include "ed25519.h"
 #include "fe.h"
 
+/*
+ * Implementation that should never be optimized out by the compiler.
+ * This method is taken from MbedTlS library.
+ */
+static void zeroize(void *v, size_t n) {
+    volatile unsigned char *p = v; while(n--) *p++ = 0;
+}
+
 void ed25519_key_exchange(unsigned char *shared_secret, const unsigned char *public_key, const unsigned char *private_key) {
     unsigned char e[32];
     unsigned int i;
@@ -76,4 +84,6 @@ void ed25519_key_exchange(unsigned char *shared_secret, const unsigned char *pub
     fe_invert(z2, z2);
     fe_mul(x2, x2, z2);
     fe_tobytes(shared_secret, x2);
+
+    zeroize(e, 32);
 }

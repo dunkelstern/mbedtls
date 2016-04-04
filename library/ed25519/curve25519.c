@@ -6,6 +6,14 @@
 #include "ed25519.h"
 #include "curve25519.h"
 
+/*
+ * Implementation that should never be optimized out by the compiler.
+ * This method is taken from MbedTlS library.
+ */
+static void zeroize(void *v, size_t n) {
+    volatile unsigned char *p = v; while(n--) *p++ = 0;
+}
+
 int curve25519_getpub(unsigned char* public_key, const unsigned char* private_key)
 {
     ge_p3 A;
@@ -58,6 +66,8 @@ int curve25519_sign(unsigned char* signature,
      */
      signature[63] &= 0x7F;  // bit should be zero already, but just in case
      signature[63] |= sign_bit;
+
+    zeroize(ed_private_key, 64);
     return 0;
 }
 

@@ -40,6 +40,11 @@
 
 #include "ed25519/curve25519.h"
 
+/* Implementation that should never be optimized out by the compiler */
+static void mbedtls_zeroize( void *v, size_t n ) {
+    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
+}
+
 /*
  * Swap given bytes
  */
@@ -96,6 +101,8 @@ static int mbedtls_ecdh_compute_shared_curve25519( mbedtls_ecp_group *grp, mbedt
     MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( z, shared_secret, sizeof( shared_secret ) ) );
 
 cleanup:
+    mbedtls_zeroize( private_key, sizeof( private_key ) );
+    mbedtls_zeroize( shared_secret, sizeof( shared_secret ) );
     return( ret );
 }
 
