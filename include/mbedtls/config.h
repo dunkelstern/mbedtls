@@ -2579,6 +2579,21 @@
  */
 #define MBEDTLS_XTEA_C
 
+/**
+ * \def MBEDTLS_ED25519_C
+ *
+ * Use Ed25519 library Curve25519 operations such ECDSA, ECDH and optimized key pair generation.
+ *
+ * Module:  library/ed25519/.c
+ *
+ * Requires: MBEDTLS_ECP_DP_CURVE25519_ENABLED
+ *
+ * Caller: library/ecp.c
+ *         library/ecdh.c
+ *         library/ecdsa.c
+ */
+#define MBEDTLS_ED25519_C
+
 /* \} name SECTION: mbed TLS modules */
 
 /**
