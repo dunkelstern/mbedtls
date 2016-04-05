@@ -2633,7 +2633,7 @@
  *         library/ecdh.c
  *         library/ecdsa.c
  */
-#define MBEDTLS_ED25519_C
+// #define MBEDTLS_ED25519_C
 
 /* \} name SECTION: mbed TLS modules */
 
