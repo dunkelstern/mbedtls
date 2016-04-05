@@ -38,11 +38,11 @@
 
 #include <string.h>
 
-#if defined(MBEDTLS_ED25519_C)
+#if defined(MBEDTLS_ED25519_ECDH_ENABLED)
 #include "ed25519/curve25519.h"
-#endif /* MBEDTLS_ED25519_C */
+#endif /* MBEDTLS_ED25519_ECDH_ENABLED */
 
-#if defined(MBEDTLS_ED25519_C)
+#if defined(MBEDTLS_ED25519_ECDH_ENABLED)
 /* Implementation that should never be optimized out by the compiler */
 static void mbedtls_zeroize( void *v, size_t n ) {
     volatile unsigned char *p = v; while( n-- ) *p++ = 0;
@@ -108,7 +108,7 @@ cleanup:
     mbedtls_zeroize( shared_secret, sizeof( shared_secret ) );
     return( ret );
 }
-#endif /* MBEDTLS_ED25519_C */
+#endif /* MBEDTLS_ED25519_ECDH_ENABLED */
 
 /*
  * Generate public key: simple wrapper around mbedtls_ecp_gen_keypair
@@ -135,13 +135,13 @@ int mbedtls_ecdh_compute_shared( mbedtls_ecp_group *grp, mbedtls_mpi *z,
     if( grp == NULL )
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
-#if defined(MBEDTLS_ED25519_C)
+#if defined(MBEDTLS_ED25519_ECDH_ENABLED)
     /*
      * Use custom optimization
      */
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
         return mbedtls_ecdh_compute_shared_curve25519(grp, z, Q, d, f_rng, p_rng);
-#endif /* MBEDTLS_ED25519_C */
+#endif /* MBEDTLS_ED25519_ECDH_ENABLED */
 
     mbedtls_ecp_point_init( &P );
 

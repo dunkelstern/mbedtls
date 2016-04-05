@@ -62,9 +62,9 @@
 #define mbedtls_free       free
 #endif
 
-#if defined(MBEDTLS_ED25519_C)
+#if defined(MBEDTLS_ED25519_ECP_ENABLED)
 #include "ed25519/curve25519.h"
-#endif /* MBEDTLS_ED25519_C */
+#endif /* MBEDTLS_ED25519_ECP_ENABLED */
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \
     !defined(inline) && !defined(__cplusplus)
@@ -1608,7 +1608,7 @@ cleanup:
 }
 #endif /* ECP_MONTGOMERY */
 
-#if defined(MBEDTLS_ED25519_C)
+#if defined(MBEDTLS_ED25519_ECP_ENABLED)
 /*
  * Swap given bytes
  */
@@ -1663,7 +1663,7 @@ cleanup:
     mbedtls_zeroize( private_key, sizeof( private_key ) );
     return( ret );
 }
-#endif /* MBEDTLS_ED25519_C */
+#endif /* MBEDTLS_ED25519_ECP_ENABLED */
 
 /*
  * Multiplication R = m * P
@@ -1946,12 +1946,12 @@ cleanup:
     if( ret != 0 )
         return( ret );
 
-#if defined(MBEDTLS_ED25519_C)
+#if defined(MBEDTLS_ED25519_ECP_ENABLED)
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
     {
         return( mbedtls_curve25519_getpub( grp, Q, d, G, f_rng, p_rng ) );
     }
-#endif /* MBEDTLS_ED25519_C */
+#endif /* MBEDTLS_ED25519_ECP_ENABLED */
     return( mbedtls_ecp_mul( grp, Q, d, G, f_rng, p_rng ) );
 }
 
