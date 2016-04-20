@@ -140,6 +140,7 @@ endif()
 
 if(NOT CMAKE_VERSION VERSION_LESS 3.0)
     ## Define names for configuration files
+    set (targets_export_name "mbedtls-targets")
     set (generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
     set (version_config "${generated_dir}/mbedtls-config-version.cmake")
     set (project_config "${generated_dir}/mbedtls-config.cmake")
@@ -184,7 +185,7 @@ if(USE_STATIC_MBEDTLS_LIBRARY)
     else(CMAKE_VERSION VERSION_LESS 3.0)
         install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
                         ${ed25519_static_target}
-                EXPORT "mbedtls-targets"
+                EXPORT ${targets_export_name}
                 DESTINATION "${LIB_INSTALL_DIR}"
                 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
                 INCLUDES DESTINATION "include")
@@ -215,7 +216,7 @@ if(USE_SHARED_MBEDTLS_LIBRARY)
                 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
     else(CMAKE_VERSION VERSION_LESS 3.0)
         install(TARGETS mbedtls mbedx509 mbedcrypto ed25519
-                EXPORT "mbedtls-targets"
+                EXPORT ${targets_export_name}
                 DESTINATION "${LIB_INSTALL_DIR}"
                 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
                 INCLUDES DESTINATION "include")
@@ -234,7 +235,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.0)
             DESTINATION "${LIB_INSTALL_DIR}/cmake/MbedTLS"
             PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
-    install(EXPORT "mbedtls-targets"
+    install(EXPORT ${targets_export_name}
             NAMESPACE "mbedtls::"
             DESTINATION "${LIB_INSTALL_DIR}/cmake/MbedTLS"
             PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
