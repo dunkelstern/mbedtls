@@ -138,6 +138,28 @@ elseif(USE_STATIC_MBEDTLS_LIBRARY)
     set(ed25519_static_target "ed25519")
 endif()
 
+if(NOT CMAKE_VERSION VERSION_LESS 3.0)
+    ## Define names for configuration files
+    set (targets_export_name "mbedtls-targets")
+    set (generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    set (version_config "${generated_dir}/mbedtls-config-version.cmake")
+    set (project_config "${generated_dir}/mbedtls-config.cmake")
+
+    # Create CMake configuration files
+    include(CMakePackageConfigHelpers)
+
+    ## Write 'mbedtls-config-version.cmake' file
+    write_basic_package_version_file(
+            ${version_config} VERSION 2.2.1 COMPATIBILITY SameMajorVersion)
+
+    ## Configure 'mbedtls-config.cmake' file
+    configure_package_config_file(
+            "cmake/config.cmake.in"
+            "${project_config}"
+            INSTALL_DESTINATION "${LIB_INSTALL_DIR}/cmake")
+endif(NOT CMAKE_VERSION VERSION_LESS 3.0)
+
+# Create and install targets
 if(USE_STATIC_MBEDTLS_LIBRARY)
     add_library(${ed25519_static_target} STATIC ${src_ed25519})
     set_target_properties(${ed25519_static_target} PROPERTIES OUTPUT_NAME ed25519)
@@ -155,10 +177,20 @@ if(USE_STATIC_MBEDTLS_LIBRARY)
     set_target_properties(${mbedtls_static_target} PROPERTIES OUTPUT_NAME mbedtls)
     target_link_libraries(${mbedtls_static_target} ${libs} ${mbedx509_static_target})
 
-    install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
-                    ${ed25519_static_target}
-            DESTINATION ${LIB_INSTALL_DIR}
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    if(CMAKE_VERSION VERSION_LESS 3.0)
+        install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
+                        ${ed25519_static_target}
+                DESTINATION "${LIB_INSTALL_DIR}"
+                PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    else(CMAKE_VERSION VERSION_LESS 3.0)
+        install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
+                        ${ed25519_static_target}
+                EXPORT ${targets_export_name}
+                DESTINATION "${LIB_INSTALL_DIR}"
+                PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+                INCLUDES DESTINATION "include")
+    endif (CMAKE_VERSION VERSION_LESS 3.0)
+
 endif(USE_STATIC_MBEDTLS_LIBRARY)
 
 if(USE_SHARED_MBEDTLS_LIBRARY)
@@ -178,12 +210,33 @@ if(USE_SHARED_MBEDTLS_LIBRARY)
     set_target_properties(mbedtls PROPERTIES VERSION 2.2.1 SOVERSION 10)
     target_link_libraries(mbedtls ${libs} mbedx509)
 
-    install(TARGETS mbedtls mbedx509 mbedcrypto ed25519
-            DESTINATION ${LIB_INSTALL_DIR}
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    if(CMAKE_VERSION VERSION_LESS 3.0)
+        install(TARGETS mbedtls mbedx509 mbedcrypto ed25519
+                DESTINATION "${LIB_INSTALL_DIR}"
+                PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    else(CMAKE_VERSION VERSION_LESS 3.0)
+        install(TARGETS mbedtls mbedx509 mbedcrypto ed25519
+                EXPORT ${targets_export_name}
+                DESTINATION "${LIB_INSTALL_DIR}"
+                PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+                INCLUDES DESTINATION "include")
+    endif (CMAKE_VERSION VERSION_LESS 3.0)
+
 endif(USE_SHARED_MBEDTLS_LIBRARY)
 
 add_custom_target(lib DEPENDS mbedcrypto mbedx509 mbedtls ed25519)
 if(USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
     add_dependencies(lib mbedcrypto_static mbedx509_static mbedtls_static ed25519_static)
 endif()
+
+if(NOT CMAKE_VERSION VERSION_LESS 3.0)
+    # Install configuration files
+    install(FILES "${project_config}" "${version_config}"
+            DESTINATION "${LIB_INSTALL_DIR}/cmake/MbedTLS"
+            PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+
+    install(EXPORT ${targets_export_name}
+            NAMESPACE "mbedtls::"
+            DESTINATION "${LIB_INSTALL_DIR}/cmake/MbedTLS"
+            PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+endif(NOT CMAKE_VERSION VERSION_LESS 3.0)
