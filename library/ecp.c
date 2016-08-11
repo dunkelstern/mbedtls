@@ -62,9 +62,9 @@
 #define mbedtls_free       free
 #endif
 
-#if defined(MBEDTLS_ED25519_ECP_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
+#if defined(MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
 #include "ed25519/curve25519.h"
-#endif /* MBEDTLS_ED25519_ECP_ENABLED || */
+#endif /* MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED || */
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \
     !defined(inline) && !defined(__cplusplus)
@@ -1613,7 +1613,7 @@ cleanup:
 }
 #endif /* ECP_MONTGOMERY */
 
-#if defined(MBEDTLS_ED25519_ECP_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
+#if defined(MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
 /*
  * Swap given bytes
  */
@@ -1630,9 +1630,9 @@ static void reverse_bytes(unsigned char *first, unsigned char *last) {
         ++first;
     }
 }
-#endif /* MBEDTLS_ED25519_ECP_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED */
+#endif /* MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED */
 
-#if defined(MBEDTLS_ED25519_ECP_ENABLED)
+#if defined(MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED)
 /*
  * Calculate Curve25519 public key
  */
@@ -1670,7 +1670,7 @@ cleanup:
     mbedtls_zeroize( private_key, sizeof( private_key ) );
     return( ret );
 }
-#endif /* MBEDTLS_ED25519_ECP_ENABLED */
+#endif /* MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED */
 
 #if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
 /*
@@ -2029,12 +2029,12 @@ cleanup:
     if( ret != 0 )
         return( ret );
 
-#if defined(MBEDTLS_ED25519_ECP_ENABLED) && defined(ECP_MONTGOMERY)
+#if defined(MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED) && defined(ECP_MONTGOMERY)
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
     {
         return( mbedtls_curve25519_getpub( grp, Q, d, G, f_rng, p_rng ) );
     }
-#endif /* MBEDTLS_ED25519_ECP_ENABLED &&  ECP_MONTGOMERY */
+#endif /* MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED &&  ECP_MONTGOMERY */
 
 #if defined(ECP_EDWARDS)
     if (grp->id == MBEDTLS_ECP_DP_ED25519) {

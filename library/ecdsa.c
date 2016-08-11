@@ -42,9 +42,9 @@
 #include "mbedtls/hmac_drbg.h"
 #endif
 
-#if defined(MBEDTLS_ED25519_ECDSA_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
+#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
 #include "ed25519/curve25519.h"
-#endif /* MBEDTLS_ED25519_ECDSA_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED*/
+#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED*/
 
 /*
  * Derive a suitable integer for group grp from a buffer of length len
@@ -70,7 +70,7 @@ cleanup:
 }
 
 
-#if defined(MBEDTLS_ED25519_ECDSA_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
+#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
 /* Implementation that should never be optimized out by the compiler */
 static void mbedtls_zeroize( void *v, size_t n ) {
     volatile unsigned char *p = v; while( n-- ) *p++ = 0;
@@ -92,9 +92,9 @@ static void reverse_bytes(unsigned char *first, unsigned char *last) {
     }
 }
 
-#endif /* MBEDTLS_ED25519_ECDSA_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED */
+#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED */
 
-#if defined(MBEDTLS_ED25519_ECDSA_ENABLED)
+#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED)
 /*
  * Compute Ed25519 signature of a given message (http://ed25519.cr.yp.to/ed25519-20110926.pdf)
  * Use Curve25519 keypair as base
@@ -161,7 +161,7 @@ static int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
 cleanup:
     return( ret );
 }
-#endif /* MBEDTLS_ED25519_ECDSA_ENABLED */
+#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED */
 
 #if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
 /*
@@ -244,11 +244,11 @@ int mbedtls_ecdsa_sign( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
     mbedtls_ecp_point R;
     mbedtls_mpi k, e, t;
 
-#if defined(MBEDTLS_ED25519_ECDSA_ENABLED)
+#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED)
     /* Use EdDSA on curve Curve25519 */
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
         return mbedtls_ecdsa_sign_curve25519( grp, r, s, d, buf, blen, f_rng, p_rng );
-#endif /* MBEDTLS_ED25519_ECDSA_ENABLED */
+#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED */
 
 #if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
     if( grp->id == MBEDTLS_ECP_DP_ED25519 )
@@ -385,11 +385,11 @@ int mbedtls_ecdsa_verify( mbedtls_ecp_group *grp,
     mbedtls_ecp_point_init( &R );
     mbedtls_mpi_init( &e ); mbedtls_mpi_init( &s_inv ); mbedtls_mpi_init( &u1 ); mbedtls_mpi_init( &u2 );
 
-#if defined(MBEDTLS_ED25519_ECDSA_ENABLED)
+#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED)
     /* Use EdDSA on curve Curve25519 */
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
         return mbedtls_ecdsa_verify_curve25519( grp, buf, blen, Q, r, s );
-#endif /* MBEDTLS_ED25519_ECDSA_ENABLED */
+#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED */
 
 #if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
     if( grp->id == MBEDTLS_ECP_DP_ED25519 )

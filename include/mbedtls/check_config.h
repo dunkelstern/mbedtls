@@ -559,21 +559,19 @@
 #error "MBEDTLS_ED25519_C defined, but not all prerequisites"
 #endif
 
-#if defined(MBEDTLS_ED25519_ECP_ENABLED) && \
+#if defined(MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED) && \
     ( !defined(MBEDTLS_ED25519_C) || !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) )
-#error "MBEDTLS_ED25519_ECP_ENABLED defined, but not all prerequisites"
+#error "MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED defined, but not all prerequisites"
 #endif
 
-#if defined(MBEDTLS_ED25519_ECDH_ENABLED) && \
-    ( !defined(MBEDTLS_ED25519_C) || \
-        ( !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) && (!defined(MBEDTLS_ECP_DP_ED25519_ENABLED)) ) )
-#error "MBEDTLS_ED25519_ECDH_ENABLED defined, but not all prerequisites"
+#if defined(MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED) && \
+    ( !defined(MBEDTLS_ED25519_C) || !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) )
+#error "MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED defined, but not all prerequisites"
 #endif
 
-#if defined(MBEDTLS_ED25519_ECDSA_ENABLED) && \
-    ( !defined(MBEDTLS_ED25519_C) || \
-        ( !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) && (!defined(MBEDTLS_ECP_DP_ED25519_ENABLED)) ) )
-#error "MBEDTLS_ED25519_ECDSA_ENABLED defined, but not all prerequisites"
+#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED) && \
+    ( !defined(MBEDTLS_ED25519_C) || !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) )
+#error "MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED defined, but not all prerequisites"
 #endif
 
 /*
