@@ -164,9 +164,6 @@ static const mbedtls_ecp_curve_info ecp_supported_curves[] =
 #if defined(MBEDTLS_ECP_DP_SECP192K1_ENABLED)
     { MBEDTLS_ECP_DP_SECP192K1,    18,     192,    "secp192k1"         },
 #endif
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-    { MBEDTLS_ECP_DP_ED25519,    18,     255,    "ed25519"         },
-#endif
     { MBEDTLS_ECP_DP_NONE,          0,     0,      NULL                },
 };
 
@@ -1634,6 +1631,7 @@ static void reverse_bytes(unsigned char *first, unsigned char *last) {
     }
 }
 
+#if defined(ECP_MONTGOMERY)
 /*
  * Calculate Curve25519 public key
  */
@@ -1671,9 +1669,11 @@ cleanup:
     mbedtls_zeroize( private_key, sizeof( private_key ) );
     return( ret );
 }
+#endif /* ECP_MONTGOMERY */
 
+#if defined(ECP_EDWARDS)
 /*
- * Calculate Curve25519 public key
+ * Calculate Ed25519 public key
  */
 static int mbedtls_ed25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
              const mbedtls_mpi *m, const mbedtls_ecp_point *P,
@@ -1709,6 +1709,7 @@ cleanup:
     mbedtls_zeroize( private_key, sizeof( private_key ) );
     return( ret );
 }
+#endif /* ECP_EDWARDS */
 #endif /* MBEDTLS_ED25519_ECP_ENABLED */
 
 /*
@@ -2029,13 +2030,20 @@ cleanup:
         return( ret );
 
 #if defined(MBEDTLS_ED25519_ECP_ENABLED)
+#if defined(ECP_MONTGOMERY)
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
     {
         return( mbedtls_curve25519_getpub( grp, Q, d, G, f_rng, p_rng ) );
-    } else if (grp->id == MBEDTLS_ECP_DP_ED25519) {
+    }
+#endif /* ECP_MONTGOMERY */
+
+#if defined(ECP_EDWARDS)
+    if (grp->id == MBEDTLS_ECP_DP_ED25519) {
         return( mbedtls_ed25519_getpub( grp, Q, d, G, f_rng, p_rng ) );
     }
+#endif /* ECP_EDWARDS */
 #endif /* MBEDTLS_ED25519_ECP_ENABLED */
+
     return( mbedtls_ecp_mul( grp, Q, d, G, f_rng, p_rng ) );
 }
 

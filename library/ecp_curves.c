@@ -794,10 +794,13 @@ int mbedtls_ecp_group_load( mbedtls_ecp_group *grp, mbedtls_ecp_group_id id )
         case MBEDTLS_ECP_DP_CURVE25519:
             grp->modp = ecp_mod_p255;
             return( ecp_use_curve25519( grp ) );
+#endif /* MBEDTLS_ECP_DP_CURVE25519_ENABLED */
+
+#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
         case MBEDTLS_ECP_DP_ED25519:
             grp->modp = NULL;
             return( ecp_use_ed25519( grp ) );
-#endif /* MBEDTLS_ECP_DP_CURVE25519_ENABLED */
+#endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
 
         default:
             mbedtls_ecp_group_free( grp );
