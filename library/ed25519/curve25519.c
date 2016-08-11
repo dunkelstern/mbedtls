@@ -17,7 +17,7 @@ static void zeroize(void *v, size_t n) {
     volatile unsigned char *p = v; while(n--) *p++ = 0;
 }
 
-int curve25519_getpub(unsigned char* public_key, const unsigned char* private_key)
+int mbedtls_ext_curve25519_getpub(unsigned char* public_key, const unsigned char* private_key)
 {
     ge_p3 A;
     fe x1, tmp0, tmp1;
@@ -37,7 +37,7 @@ int curve25519_getpub(unsigned char* public_key, const unsigned char* private_ke
     return 0;
 }
 
-int curve25519_sign(unsigned char* signature,
+int mbedtls_ext_curve25519_sign(unsigned char* signature,
                     const unsigned char* private_key,
                     const unsigned char* msg, const unsigned long msg_len)
 {
@@ -74,7 +74,7 @@ int curve25519_sign(unsigned char* signature,
     return 0;
 }
 
-int curve25519_verify(const unsigned char* signature,
+int mbedtls_ext_curve25519_verify(const unsigned char* signature,
                       const unsigned char* public_key,
                       const unsigned char* msg, const unsigned long msg_len)
 {
@@ -108,7 +108,7 @@ int curve25519_verify(const unsigned char* signature,
     return ed25519_verify(verify_buf, msg, msg_len, ed_public_key_point);
 }
 
-int curve25519_key_exchange(unsigned char *shared_secret,
+int mbedtls_ext_curve25519_key_exchange(unsigned char *shared_secret,
                             const unsigned char *public_key,
                             const unsigned char *private_key)
 {
@@ -129,9 +129,52 @@ int curve25519_key_exchange(unsigned char *shared_secret,
     fe_tobytes(ed_public_key, ed_y);
 
     /*
-     * Step 2. Compute shared secred
+     * Step 2. Compute shared secret
      */
     ed25519_key_exchange(shared_secret, ed_public_key, private_key);
     return 0;
 }
+
+int mbedtls_ext_ed25519_getpub(unsigned char* public_key, const unsigned char* seed) {
+    unsigned char private_key[64];
+    ed25519_create_keypair(public_key, private_key, seed);
+    zeroize(private_key, sizeof(private_key));
+    return 0;
+}
+
+
+int mbedtls_ext_ed25519_key_exchange(unsigned char *shared_secret,
+        const unsigned char *public_key,
+        const unsigned char *private_key) {
+
+    unsigned char az[64];
+    sha512(private_key, 32, az);
+    az[0] &= 248;
+    az[31] &= 63;
+    az[31] |= 64;
+
+    ed25519_key_exchange(shared_secret, public_key, az);
+    zeroize(az, sizeof(az));
+    return 0;
+}
+
+int mbedtls_ext_ed25519_sign(unsigned char* signature,
+        const unsigned char* sk,
+        const unsigned char* msg, const unsigned long msg_len) {
+
+    unsigned char public_key[32];
+    unsigned char private_key[64];
+
+    ed25519_create_keypair(public_key, private_key, sk);
+    libsodium_ed25519_sign(signature, msg, msg_len, private_key);
+    return 0;
+}
+
+
+int mbedtls_ext_ed25519_verify(const unsigned char* signature,
+        const unsigned char* public_key,
+        const unsigned char* msg, const unsigned long msg_len) {
+    return ed25519_verify(signature, msg, msg_len, public_key);
+}
+
 #endif /* ED25519_ENABLED */

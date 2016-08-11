@@ -96,6 +96,7 @@ set(src_ed25519
     ed25519/verify.c
     ed25519/key_exchange.c
     ed25519/curve25519.c
+    ed25519/keypair.c
 )
 
 if(CMAKE_COMPILER_IS_GNUCC)

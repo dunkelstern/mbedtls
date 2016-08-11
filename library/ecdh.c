@@ -66,7 +66,7 @@ static void reverse_bytes(unsigned char *first, unsigned char *last) {
 }
 
 /*
- * Compute shared secret with ed25519 curve
+ * Compute shared secret on the Curve25519 curve
  */
 static int mbedtls_ecdh_compute_shared_curve25519( mbedtls_ecp_group *grp, mbedtls_mpi *z,
                          const mbedtls_ecp_point *Q, const mbedtls_mpi *d,
@@ -93,7 +93,7 @@ static int mbedtls_ecdh_compute_shared_curve25519( mbedtls_ecp_group *grp, mbedt
     reverse_bytes( private_key, private_key + sizeof( private_key ) );
 
     // compute shared secret
-    if( curve25519_key_exchange( shared_secret, public_key, private_key ) )
+    if( mbedtls_ext_curve25519_key_exchange( shared_secret, public_key, private_key ) )
     {
         ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
         goto cleanup;
@@ -105,6 +105,50 @@ static int mbedtls_ecdh_compute_shared_curve25519( mbedtls_ecp_group *grp, mbedt
 
 cleanup:
     mbedtls_zeroize( private_key, sizeof( private_key ) );
+    mbedtls_zeroize( shared_secret, sizeof( shared_secret ) );
+    return( ret );
+}
+
+/*
+ * Compute shared secret on the Ed25519 curve
+ */
+static int mbedtls_ecdh_compute_shared_ed25519( mbedtls_ecp_group *grp, mbedtls_mpi *z,
+        const mbedtls_ecp_point *Q, const mbedtls_mpi *d,
+        int (*f_rng)(void *, unsigned char *, size_t),
+        void *p_rng )
+{
+    int ret;
+    unsigned char shared_secret[32];
+    unsigned char public_key[32];
+    unsigned char secret_key[32];
+
+    (void) f_rng;
+    (void) p_rng;
+
+    if( grp->id != MBEDTLS_ECP_DP_ED25519 )
+        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
+
+    // Q -> Q(BE) -> Q(LE)
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->Y, public_key, sizeof(public_key) ) );
+    reverse_bytes( public_key, public_key + sizeof( public_key ) );
+
+    // d -> d(BE) -> d(LE)
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, secret_key, sizeof(secret_key) ) );
+    reverse_bytes( secret_key, secret_key + sizeof( secret_key ) );
+
+    // compute shared secret
+    if( mbedtls_ext_ed25519_key_exchange( shared_secret, public_key, secret_key ) )
+    {
+        ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
+        goto cleanup;
+    }
+
+    // z(LE) -> z(BE) -> z
+    reverse_bytes( shared_secret, shared_secret + sizeof( shared_secret ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( z, shared_secret, sizeof( shared_secret ) ) );
+
+    cleanup:
+    mbedtls_zeroize( secret_key, sizeof( secret_key ) );
     mbedtls_zeroize( shared_secret, sizeof( shared_secret ) );
     return( ret );
 }
@@ -141,6 +185,9 @@ int mbedtls_ecdh_compute_shared( mbedtls_ecp_group *grp, mbedtls_mpi *z,
      */
     if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
         return mbedtls_ecdh_compute_shared_curve25519(grp, z, Q, d, f_rng, p_rng);
+
+    if( grp->id == MBEDTLS_ECP_DP_ED25519 )
+        return mbedtls_ecdh_compute_shared_ed25519(grp, z, Q, d, f_rng, p_rng);
 #endif /* MBEDTLS_ED25519_ECDH_ENABLED */
 
     mbedtls_ecp_point_init( &P );

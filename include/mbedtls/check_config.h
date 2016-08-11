@@ -545,7 +545,8 @@
 #error "MBEDTLS_ECIES_C defined, but not all prerequisites"
 #endif
 
-#if defined(MBEDTLS_ED25519_C) && !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED)
+#if defined(MBEDTLS_ED25519_C) && \
+    ( !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) && !defined(MBEDTLS_ECP_DP_ED25519_ENABLED) )
 #error "MBEDTLS_ED25519_C defined, but not all prerequisites"
 #endif
 
@@ -562,7 +563,8 @@
 #endif
 
 #if defined(MBEDTLS_ED25519_ECDH_ENABLED) && \
-    ( !defined(MBEDTLS_ED25519_C) || !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) )
+    ( !defined(MBEDTLS_ED25519_C) || \
+        ( !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) && (!defined(MBEDTLS_ECP_DP_ED25519_ENABLED)) ) )
 #error "MBEDTLS_ED25519_ECDH_ENABLED defined, but not all prerequisites"
 #endif
 
