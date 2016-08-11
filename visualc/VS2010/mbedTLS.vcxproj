@@ -165,6 +165,8 @@
     <ClInclude Include="..\..\include\mbedtls\dhm.h" />
     <ClInclude Include="..\..\include\mbedtls\ecdh.h" />
     <ClInclude Include="..\..\include\mbedtls\ecdsa.h" />
+    <ClInclude Include="..\..\include\mbedtls\ecies.h" />
+    <ClInclude Include="..\..\include\mbedtls\ecies_envelope.h" />
     <ClInclude Include="..\..\include\mbedtls\ecjpake.h" />
     <ClInclude Include="..\..\include\mbedtls\ecp.h" />
     <ClInclude Include="..\..\include\mbedtls\entropy.h" />
@@ -173,6 +175,10 @@
     <ClInclude Include="..\..\include\mbedtls\gcm.h" />
     <ClInclude Include="..\..\include\mbedtls\havege.h" />
     <ClInclude Include="..\..\include\mbedtls\hmac_drbg.h" />
+    <ClInclude Include="..\..\include\mbedtls\kdf.h" />
+    <ClInclude Include="..\..\include\mbedtls\kdf1.h" />
+    <ClInclude Include="..\..\include\mbedtls\kdf2.h" />
+    <ClInclude Include="..\..\include\mbedtls\kdf_internal.h" />
     <ClInclude Include="..\..\include\mbedtls\md.h" />
     <ClInclude Include="..\..\include\mbedtls\md2.h" />
     <ClInclude Include="..\..\include\mbedtls\md4.h" />
@@ -229,6 +235,8 @@
     <ClCompile Include="..\..\library\dhm.c" />
     <ClCompile Include="..\..\library\ecdh.c" />
     <ClCompile Include="..\..\library\ecdsa.c" />
+    <ClCompile Include="..\..\library\ecies.c" />
+    <ClCompile Include="..\..\library\ecies_envelope.c" />
     <ClCompile Include="..\..\library\ecjpake.c" />
     <ClCompile Include="..\..\library\ecp.c" />
     <ClCompile Include="..\..\library\ecp_curves.c" />
@@ -238,6 +246,10 @@
     <ClCompile Include="..\..\library\gcm.c" />
     <ClCompile Include="..\..\library\havege.c" />
     <ClCompile Include="..\..\library\hmac_drbg.c" />
+    <ClCompile Include="..\..\library\kdf.c" />
+    <ClCompile Include="..\..\library\kdf1.c" />
+    <ClCompile Include="..\..\library\kdf2.c" />
+    <ClCompile Include="..\..\library\kdf_wrap.c" />
     <ClCompile Include="..\..\library\md.c" />
     <ClCompile Include="..\..\library\md2.c" />
     <ClCompile Include="..\..\library\md4.c" />
