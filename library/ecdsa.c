@@ -43,7 +43,7 @@
 #endif
 
 #if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-#include "ed25519/curve25519.h"
+#include "ed25519/x25519.h"
 #endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED*/
 
 /*
@@ -71,10 +71,6 @@ cleanup:
 
 
 #if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-/* Implementation that should never be optimized out by the compiler */
-static void mbedtls_zeroize( void *v, size_t n ) {
-    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
-}
 
 /*
  * Swap given bytes
@@ -104,27 +100,31 @@ static int mbedtls_ecdsa_sign_curve25519( mbedtls_ecp_group *grp, mbedtls_mpi *r
                 int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 {
     int ret;
-    unsigned char private_key[32];
-    unsigned char signature[64];
+    x25519_private_key_t private_key;
+    x25519_signature_t signature;
 
     if( grp->N.p != NULL )
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
+    x25519_private_key_init(&private_key);
+    x25519_signature_init(&signature);
+
     (void) f_rng;
     (void) p_rng;
     // d -> d(BE) -> d(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, private_key, sizeof(private_key) ) );
-    reverse_bytes( private_key, private_key + sizeof( private_key ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, private_key.p, private_key.len ) );
+    reverse_bytes( private_key.p, private_key.p + private_key.len );
     // derive sign
-    MBEDTLS_MPI_CHK( mbedtls_ext_curve25519_sign( signature, private_key, msg, msg_len ) );
+    MBEDTLS_MPI_CHK( x25519_montgomery_sign( &signature, &private_key, msg, msg_len ) );
     // signature(LE) -> signature(BE)
-    reverse_bytes( signature, signature + sizeof( signature ) );
+    reverse_bytes( signature.p, signature.p + signature .len );
     // signature(BE) -> (s,r)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( s, signature, 32 ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature + 32, 32 ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( s, signature.s, signature.s_len ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature.r, signature.r_len ) );
 
 cleanup:
-    mbedtls_zeroize( private_key, sizeof( private_key ) );
+    x25519_private_key_free(&private_key);
+    x25519_signature_free(&signature);
     return( ret );
 }
 
@@ -137,28 +137,33 @@ static int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
                   const mbedtls_ecp_point *Q, const mbedtls_mpi *r, const mbedtls_mpi *s)
 {
     int ret;
-    unsigned char public_key[32];
-    unsigned char signature[64];
+    x25519_public_key_t public_key;
+    x25519_signature_t signature;
 
     if( grp->N.p != NULL )
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
+    x25519_public_key_init(&public_key);
+    x25519_signature_init(&signature);
+
     // Q -> Q(BE) -> Q(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->X, public_key, sizeof(public_key) ) );
-    reverse_bytes( public_key, public_key + sizeof( public_key ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->X, public_key.p, public_key.len ) );
+    reverse_bytes( public_key.p, public_key.p + public_key.len );
     // (s, r) -> (s, r)(BE) -> (r, s)(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( s, signature, 32 ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( r, signature + 32, 32 ) );
-    reverse_bytes( signature, signature + sizeof( signature ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( s, signature.s, signature.s_len ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( r, signature.r, signature.r_len ) );
+    reverse_bytes( signature.p, signature.p + signature.len );
 
     // verify sign
-    if ( mbedtls_ext_curve25519_verify( signature, public_key, msg, msg_len ) == 0 )
+    if ( x25519_montgomery_verify( &signature, &public_key, msg, msg_len ) == 0 )
     {
         ret = MBEDTLS_ERR_ECP_VERIFY_FAILED;
         goto cleanup;
     }
 
 cleanup:
+    x25519_public_key_free(&public_key);
+    x25519_signature_free(&signature);
     return( ret );
 }
 #endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED */
@@ -173,27 +178,31 @@ static int mbedtls_ecdsa_sign_ed25519( mbedtls_ecp_group *grp, mbedtls_mpi *r, m
                 int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 {
     int ret;
-    unsigned char private_key[32];
-    unsigned char signature[64];
+    x25519_secret_key_t secret_key;
+    x25519_signature_t signature;
 
     if( grp->N.p != NULL )
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
+    x25519_secret_key_init(&secret_key);
+    x25519_signature_init(&signature);
+
     (void) f_rng;
     (void) p_rng;
     // d -> d(BE) -> d(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, private_key, sizeof(private_key) ) );
-    reverse_bytes( private_key, private_key + sizeof( private_key ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, secret_key.p, secret_key.len ) );
+    reverse_bytes( secret_key.p, secret_key.p + secret_key.len );
     // derive sign
-    MBEDTLS_MPI_CHK( mbedtls_ext_ed25519_sign( signature, private_key, msg, msg_len ) );
+    MBEDTLS_MPI_CHK(x25519_edwards_sign(&signature, &secret_key, msg, msg_len) );
     // signature(LE) -> signature(BE)
-    reverse_bytes( signature, signature + sizeof( signature ) );
+    reverse_bytes( signature.p, signature.p + signature.len );
     // signature(BE) -> (s,r)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( s, signature, 32 ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature + 32, 32 ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( s, signature.s, signature.s_len ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature.r, signature.r_len ) );
 
 cleanup:
-    mbedtls_zeroize( private_key, sizeof( private_key ) );
+    x25519_secret_key_free(&secret_key);
+    x25519_signature_free(&signature);
     return( ret );
 }
 
@@ -206,28 +215,33 @@ static int mbedtls_ecdsa_verify_ed25519( mbedtls_ecp_group *grp,
                   const mbedtls_ecp_point *Q, const mbedtls_mpi *r, const mbedtls_mpi *s)
 {
     int ret;
-    unsigned char public_key[32];
-    unsigned char signature[64];
+    x25519_public_key_t public_key;
+    x25519_signature_t signature;
 
     if( grp->N.p != NULL )
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
+    x25519_public_key_init(&public_key);
+    x25519_signature_init(&signature);
+
     // Q -> Q(BE) -> Q(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->Y, public_key, sizeof(public_key) ) );
-    reverse_bytes( public_key, public_key + sizeof( public_key ) );
-    // (s, r) -> (s, r)(BE) -> (r, s)(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( s, signature, 32 ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( r, signature + 32, 32 ) );
-    reverse_bytes( signature, signature + sizeof( signature ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->Y, public_key.p, public_key.len ) );
+    reverse_bytes( public_key.p, public_key.p + public_key.len );
+    // (r, s) -> (r, s)(BE) -> (s, r)(LE)
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( s, signature.s, signature.s_len ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( r, signature.r, signature.r_len ) );
+    reverse_bytes( signature.p, signature.p + signature.len );
 
     // verify sign
-    if ( mbedtls_ext_ed25519_verify( signature, public_key, msg, msg_len ) == 0 )
+    if (x25519_edwards_verify(&signature, &public_key, msg, msg_len) == 0 )
     {
         ret = MBEDTLS_ERR_ECP_VERIFY_FAILED;
         goto cleanup;
     }
 
 cleanup:
+    x25519_public_key_free(&public_key);
+    x25519_signature_free(&signature);
     return( ret );
 }
 #endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
