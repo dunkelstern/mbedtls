@@ -53,10 +53,13 @@ ASN.1 Write Integer #0 (Zero)
 mbedtls_asn1_write_int:0:"020100":3:3
 
 ASN.1 Write Integer #1 (Small positive)
-mbedtls_asn1_write_int:123:"02017B":3:3
+mbedtls_asn1_write_int:23:"020117":3:3
 
-ASN.1 Write Integer #2 (Big positive)
-mbedtls_asn1_write_int:305419896:"020412345678":6:6
+ASN.1 Write Integer #2 (Small negative)
+mbedtls_asn1_write_int:-42:"0201D6":3:3
+
+ASN.1 Write Integer #3 (small MSB adjusted positive)
+mbedtls_asn1_write_int:128:"02020080":4:4
 
 ASN.1 Write Integer #3 (Small negative)
 mbedtls_asn1_write_int:-16:"0201F0":3:3

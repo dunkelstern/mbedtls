@@ -219,65 +219,85 @@ int mbedtls_asn1_write_int( unsigned char **p, unsigned char *start, int val )
 {
     int ret;
     size_t len = 0;
-    size_t val_buf_len = 0;
-    unsigned char val_buf[8]; // consider that size of int <= 64 bit
 
-    const int one_const = 1;
-    const int is_bigendian = (*(char*)&one_const) == 0;
+    //
+    // a better world:
+    //
+    // the loop below terminates after at most sizeof(int)+1 iterations:
+    // because of
+    //
+    //    P >> (8 * sizeof(int)) == 0 for all P >= 0
+    // and
+    //    N >> (8 * sizeof(int)) == -1 for all N < 0
+    //
+    // it is valid to encode and then right shift 8 bits until the result
+    // of the shift operation is either 0 or -1.
+    //
+    // since ASN.1 BER/DER Integer encoding is specified as
+    // two's complement, MSB of leading payload octet must be
+    // 1 for negative and 0 for non-negative integers.
+    //
+    // 7 bit right shift of val and check for 0 or -1 as termination
+    // condition ensures that a padding octet is written if the
+    // MSB of the encoded octet does not match the sign of
+    // the input.
+    //
+    //  for ( ;; )
+    //  {
+    //      if( *p - start < 1 )
+    //          return( MBEDTLS_ERR_ASN1_BUF_TOO_SMALL );
+    //      *--(*p) = (unsigned char)(val & 0xFF);
+    //      len += 1;
+    //
+    //      if( val >> 7 == 0 || val >> 7 == -1 )
+    //          break;
+    //
+    //      val >>= 8;
+    //  }
+    //
+    // reality:
+    //
+    // 1) Arithmethic right shift on signed integers is
+    //    implementation-defined behaviour for negative integers.
+    //
+    // one can emulate arithmetic right shift with sign extension for
+    // negative input by using a logical right shift and then set the
+    // shifted-in bits to one.
+    //
+    // but since
+    // 2) The ISO C standard allows three encoding methods for signed
+    //    integers: two's complement, one's complement and sign/magnitude.
+    //
+    // the two's complement encoding has to be ensured.
+    //
 
-    const unsigned char * begin = is_bigendian ?
-            (const unsigned char *)&val :
-            (const unsigned char *)&val + sizeof(val) - 1;
+    unsigned int v, fix7, fix8, cmp;
 
-    const unsigned char * end = is_bigendian ?
-            (const unsigned char *)&val + sizeof(val) :
-            (const unsigned char *)&val - 1;
-
-    const int inc = is_bigendian ? +1 : -1;
-
-    const unsigned char * prev = begin;
-    const unsigned char * curr = begin + inc;
-    int is_trim_finished = 0;
-    size_t trimed_cnt = 0;
-
-    if( *p - start < 1 )
-        return( MBEDTLS_ERR_ASN1_BUF_TOO_SMALL );
-
-    for(; curr != end; curr += inc )
-    {
-        if( !is_trim_finished )
-        {
-            const int is_ones_leading =
-                    ( *prev == 0xFF ) && ( ( *curr & 0x80 ) == 0x80 );
-            const int is_zeros_leading =
-                    ( *prev == 0x00 ) && ( ( *curr & 0x80 ) == 0x00 );
-            if( is_ones_leading || is_zeros_leading )
-            {
-                ++trimed_cnt;
-            }
-            else
-            {
-                is_trim_finished = 1;
-            }
-        }
-
-        if( is_trim_finished )
-        { // Not else for previous 'if' statement
-            val_buf[val_buf_len++] = *prev;
-        }
-
-        prev = curr;
+    if( val < 0 ) {
+        v = ~((unsigned int) -val) + 1;
+        fix7 = 0xFE << (sizeof(int) -1) * 8;
+        fix8 = 0xFF << (sizeof(int) -1) * 8;
+        cmp = -1;
+    } else {
+        v = (unsigned int)val;
+        fix7 = 0;
+        fix8 = 0;
+        cmp = 0;
     }
 
-    /* process integer last byte */
-    val_buf[val_buf_len++] = *prev;
+    for( ;; )
+    {
+        if( *p - start < 1 )
+            return( MBEDTLS_ERR_ASN1_BUF_TOO_SMALL );
 
-    if( *p - start < (int)val_buf_len )
-        return( MBEDTLS_ERR_ASN1_BUF_TOO_SMALL );
+        *--(*p) = (unsigned char) (v & 0xFF);
+        len += 1;
 
-    *p -= val_buf_len;
-    len += val_buf_len;
-    memcpy( *p, val_buf, val_buf_len );
+        if( (v >> 7 | fix7) == cmp )
+                break;
+
+        v = v >> 8 | fix8;
+    }
 
     MBEDTLS_ASN1_CHK_ADD( len, mbedtls_asn1_write_len( p, start, len ) );
     MBEDTLS_ASN1_CHK_ADD( len, mbedtls_asn1_write_tag( p, start, MBEDTLS_ASN1_INTEGER ) );
