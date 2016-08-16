@@ -1,6 +1,3 @@
-#include "config.h"
-
-#if defined(ED25519_ENABLED)
 #include "ed25519.h"
 #include "fe.h"
 
@@ -90,4 +87,3 @@ void ed25519_key_exchange(unsigned char *shared_secret, const unsigned char *pub
 
     zeroize(e, 32);
 }
-#endif /* ED25519_ENABLED */

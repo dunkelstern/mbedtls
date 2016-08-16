@@ -1,6 +1,3 @@
-#include "config.h"
-
-#if defined(ED25519_ENABLED)
 #include "ed25519.h"
 #include "sha512.h"
 #include "ge.h"
@@ -78,4 +75,3 @@ int ed25519_verify(const unsigned char *signature, const unsigned char *message,
 
     return 1;
 }
-#endif /* ED25519_ENABLED */

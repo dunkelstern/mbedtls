@@ -113,6 +113,11 @@ void x25519_secret_key_free(x25519_secret_key_t* secret_key);
  */
 void x25519_shared_key_free(x25519_shared_key_t* shared_key);
 
+/*
+ * @breif Clear memory in a secure manner.
+ * @note Implementation that should never be optimized out by the compiler.
+ */
+void x25519_zeroize(void *v, size_t n);
 
 /**
  * @brief Derive public key from the private key.

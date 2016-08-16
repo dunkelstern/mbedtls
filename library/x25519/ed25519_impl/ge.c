@@ -1,6 +1,3 @@
-#include "config.h"
-
-#if defined(ED25519_ENABLED)
 #include "ge.h"
 #include "precomp_data.h"
 
@@ -468,4 +465,3 @@ void ge_tobytes(unsigned char *s, const ge_p2 *h) {
     fe_tobytes(s, y);
     s[31] ^= fe_isnegative(x) << 7;
 }
-#endif /* ED25519_ENABLED */

@@ -1,6 +1,3 @@
-#include "config.h"
-
-#if defined(ED25519_ENABLED)
 #include "fixedint.h"
 #include "fe.h"
 
@@ -1492,4 +1489,3 @@ void fe_tobytes(unsigned char *s, const fe h) {
     s[30] = (unsigned char) (h9 >> 10);
     s[31] = (unsigned char) (h9 >> 18);
 }
-#endif /* ED25519_ENABLED */

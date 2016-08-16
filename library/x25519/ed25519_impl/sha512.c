@@ -1,6 +1,3 @@
-#include "config.h"
-
-#if defined(ED25519_ENABLED)
 /* LibTomCrypt, modular cryptographic library -- Tom St Denis
  *
  * LibTomCrypt is a library that provides various cryptographic
@@ -276,4 +273,3 @@ int sha512(const unsigned char *message, size_t message_len, unsigned char *out)
     if ((ret = sha512_final(&ctx, out))) return ret;
     return 0;
 }
-#endif /* ED25519_ENABLED */

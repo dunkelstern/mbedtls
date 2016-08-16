@@ -1,8 +1,5 @@
 #include <string.h>
 
-#include "config.h"
-
-#if defined(ED25519_ENABLED)
 #include "ed25519.h"
 #include "sha512.h"
 #include "ge.h"
@@ -71,4 +68,3 @@ void libsodium_ed25519_sign(unsigned char *signature, const unsigned char *messa
     memset(az, 0, sizeof(az));
     memset(nonce, 0, sizeof(nonce));
 }
-#endif /* ED25519_ENABLED */

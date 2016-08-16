@@ -63,7 +63,7 @@
 #endif
 
 #if defined(MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-#include "ed25519/x25519.h"
+#include "x25519/x25519.h"
 #endif /* MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED || */
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \

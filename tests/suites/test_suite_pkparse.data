@@ -147,7 +147,7 @@ depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_ECP_C:MBEDTLS_ECP_DP_CURVE25519_ENABLED
 pk_parse_public_keyfile_ec:"data_files/ec_curve25519_pub.pem":0
 
 Parse Public EC Key #11 (Experimental, ed25519)
-depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_ECP_C:MBEDTLS_ED25519_C:MBEDTLS_ECP_DP_ED25519_ENABLED
+depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_ECP_C:MBEDTLS_X25519_C:MBEDTLS_ECP_DP_ED25519_ENABLED
 pk_parse_public_keyfile_ec:"data_files/ec_ed25519_pub.pem":0
 
 Parse EC Key #1 (SEC1 DER)
@@ -219,7 +219,7 @@ depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_ECP_C:MBEDTLS_ECP_DP_CURVE25519_ENABLED
 pk_parse_keyfile_ec:"data_files/ec_curve25519_prv.pem":"NULL":0
 
 Parse EC Key #17 (SEC1 PEM, ed25519)
-depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_ECP_C:MBEDTLS_ED25519_C:MBEDTLS_ECP_DP_ED25519_ENABLED
+depends_on:MBEDTLS_PEM_PARSE_C:MBEDTLS_ECP_C:MBEDTLS_X25519_C:MBEDTLS_ECP_DP_ED25519_ENABLED
 pk_parse_keyfile_ec:"data_files/ec_ed25519_prv.pem":"NULL":0
 
 Key ASN1 (Incorrect first tag)

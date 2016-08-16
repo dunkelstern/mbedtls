@@ -721,7 +721,7 @@
  *
  * \warning This is currently experimental, so this is disabled by default.
  *
- * Requires: MBEDTLS_ED25519_C
+ * Requires: MBEDTLS_X25519_C
  *           MBEDTLS_ECP_C
  *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
  */
@@ -734,7 +734,7 @@
  *
  * \warning This is currently experimental, so this is disabled by default.
  *
- * Requires: MBEDTLS_ED25519_C
+ * Requires: MBEDTLS_X25519_C
  *           MBEDTLS_ECDH_C
  *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
  */
@@ -747,7 +747,7 @@
  *
  * \warning This is currently experimental, so this is disabled by default.
  *
- * Requires: MBEDTLS_ED25519_C
+ * Requires: MBEDTLS_X25519_C
  *           MBEDTLS_ECDSA_C
  *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
  */
@@ -2497,7 +2497,7 @@
 #define MBEDTLS_XTEA_C
 
 /**
- * \def MBEDTLS_ED25519_C
+ * \def MBEDTLS_X25519_C
  *
  * Use Ed25519 library for Curve25519 operations such ECDSA, ECDH and optimized key pair generation.
  *
@@ -2511,7 +2511,7 @@
  *         library/ecdh.c
  *         library/ecdsa.c
  */
- #define MBEDTLS_ED25519_C
+#define MBEDTLS_X25519_C
 
 /* \} name SECTION: mbed TLS modules */
 

@@ -76,10 +76,8 @@ OBJS_TLS=	debug.o		net.o		ssl_cache.o	\
 		ssl_cookie.o	ssl_srv.o	ssl_ticket.o	\
 		ssl_tls.o
 
-OBJS_ED25519=	ed25519/fe.o	ed25519/ge.o	ed25519/sc.o	\
-		ed25519/sha512.o	ed25519/sign.o	ed25519/verify.o	\
-		ed25519/key_exchange.o	ed25519/x25519.o ed25519/keypair.o
 
+OBJS_ED25519 := x25519/x25519.o $(patsubst %.c,%.o,$(wildcard x25519/ed25519_impl/*.c))
 
 .SILENT:
 
@@ -187,7 +185,7 @@ libed25519.dll: $(OBJS_ED25519)
 	echo "  LD    $@"
 	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS_ED25519) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
 
-.c.o:
+%.o : %.c
 	echo "  CC    $<"
 	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -c -o $@ $<
 
