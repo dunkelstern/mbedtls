@@ -1,6 +1,43 @@
+/**
+ * Copyright (C) 2015-2016 Virgil Security Inc.
+ *
+ * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This file is part of extension to mbed TLS (https://tls.mbed.org)
+ */
 
-#ifndef CURVE_25519_H
-#define CURVE_25519_H
+#ifndef VIRGIL_SECURITY_X25519_H
+#define VIRGIL_SECURITY_X25519_H
 
 #include <stddef.h>
 
@@ -113,11 +150,60 @@ void x25519_secret_key_free(x25519_secret_key_t* secret_key);
  */
 void x25519_shared_key_free(x25519_shared_key_t* shared_key);
 
-/*
- * @breif Clear memory in a secure manner.
+/**
+ * @brief Clear memory in a secure manner.
  * @note Implementation that should never be optimized out by the compiler.
  */
 void x25519_zeroize(void *v, size_t n);
+
+/**
+ * \brief Hash context
+ */
+typedef struct x25519_sha512_context_t x25519_sha512_context_t;
+
+/**
+ * @brief Allocate hash context
+ * @note Should be initilized and deallocated after usage.
+ * @see x25519_sha512_init()
+ * @see x25519_sha512_free()
+ * @return Unainitialzed hash context.
+ */
+x25519_sha512_context_t* x25519_sha512_alloc(void);
+
+/**
+ * @brief Initialize hash context to be used for new message hashing.
+ * @param ctx Hash context to be initialized.
+ */
+void x25519_sha512_init(x25519_sha512_context_t* ctx);
+
+/**
+ * @brief Deallocate hash context.
+ * @param ctx Hash context to be deallocated.
+ */
+void x25519_sha512_free(x25519_sha512_context_t* ctx);
+
+/**
+ * @brief Process next message.
+ * @param ctx Hash context.
+ * @param msg Message to be added to the hash.
+ * @param msg_len Message length.
+ */
+void x25519_sha512_update(x25519_sha512_context_t* ctx, const unsigned char* msg, size_t msg_len);
+
+/**
+ * @brief Finalize message processing.
+ * @param ctx Hash context.
+ * @param digest Hash result.
+ */
+void x25519_sha512_finish(x25519_sha512_context_t* ctx, unsigned char digest[64]);
+
+/**
+ * @brief Provide system hash function.
+ * @param hash Destination buffer.
+ * @param msg Message to be hashed.
+ * @param msg_len Message length.
+ */
+void x25519_sha512(unsigned char* hash, const unsigned char* msg, size_t msg_len);
 
 /**
  * @brief Derive public key from the private key.
@@ -232,4 +318,4 @@ int x25519_edwards_verify(
         const x25519_public_key_t* public_key,
         const unsigned char* msg, const unsigned long msg_len);
 
-#endif /* CURVE_25519_H */
+#endif /* VIRGIL_SECURITY_X25519_H */

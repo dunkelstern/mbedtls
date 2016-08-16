@@ -155,7 +155,7 @@ static int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
     reverse_bytes( signature.p, signature.p + signature.len );
 
     // verify sign
-    if ( x25519_montgomery_verify( &signature, &public_key, msg, msg_len ) == 0 )
+    if ( x25519_montgomery_verify( &signature, &public_key, msg, msg_len ) != 0 )
     {
         ret = MBEDTLS_ERR_ECP_VERIFY_FAILED;
         goto cleanup;
@@ -233,7 +233,7 @@ static int mbedtls_ecdsa_verify_ed25519( mbedtls_ecp_group *grp,
     reverse_bytes( signature.p, signature.p + signature.len );
 
     // verify sign
-    if (x25519_edwards_verify(&signature, &public_key, msg, msg_len) == 0 )
+    if (x25519_edwards_verify(&signature, &public_key, msg, msg_len) != 0 )
     {
         ret = MBEDTLS_ERR_ECP_VERIFY_FAILED;
         goto cleanup;
