@@ -77,7 +77,11 @@ OBJS_TLS=	debug.o		net.o		ssl_cache.o	\
 		ssl_tls.o
 
 
-OBJS_ED25519 := x25519/x25519.o $(patsubst %.c,%.o,$(wildcard x25519/ed25519_impl/*.c))
+ifndef WINDOWS
+	OBJS_ED25519 := x25519/x25519.o $(patsubst %.c,%.o,$(wildcard x25519/ed25519_impl/*.c))
+else
+	OBJS_ED25519 := x25519\x25519.o $(patsubst %.c,%.o,$(wildcard x25519\ed25519_impl\*.c))
+endif
 
 .SILENT:
 
@@ -191,7 +195,7 @@ libed25519.dll: $(OBJS_ED25519)
 
 clean:
 ifndef WINDOWS
-	rm -f *.o ed25519/*o libmbed* libed25519*
+	rm -f *.o libmbed* libed25519* $(OBJS_ED25519)
 else
-	del /Q /F *.o ed25519\*.o libmbed* libed25519*
+	del /Q /F *.o libmbed* libed25519* $(OBJS_ED25519)
 endif
