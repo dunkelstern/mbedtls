@@ -1,6 +1,10 @@
 option(USE_STATIC_MBEDTLS_LIBRARY "Build mbed TLS static library." ON)
 option(USE_SHARED_MBEDTLS_LIBRARY "Build mbed TLS shared library." OFF)
 option(LINK_WITH_PTHREAD "Explicitly link mbed TLS library to pthread." OFF)
+option(USE_X25519_AMD64_RADIX_64_24K_OPTIMIZATION
+       "Using radix 2^64 and a 24KB precomputed table optimization for x25519 curves on the x86_64 processor." OFF)
+option(USE_X25519_AMD64_RADIX_51_30K_OPTIMIZATION
+       "Using radix 2^51 and a 30KB precomputed table optimization for x25519 curves on the x86_64 processor." OFF)
 
 set(src_crypto
     aes.c
@@ -89,7 +93,13 @@ set(src_tls
 )
 
 # Define src_x25519
-add_subdirectory(ed25519_impl)
+if (USE_X25519_AMD64_RADIX_64_24K_OPTIMIZATION)
+    add_subdirectory(ed25519_amd64_64_24k)
+elseif(USE_X25519_AMD64_RADIX_51_30K_OPTIMIZATION)
+    add_subdirectory(ed25519_amd64_51_30k)
+else ()
+    add_subdirectory(ed25519_ref10)
+endif ()
 
 if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-declarations -Wmissing-prototypes")

@@ -76,12 +76,26 @@ OBJS_TLS=	debug.o		net.o		ssl_cache.o	\
 		ssl_cookie.o	ssl_srv.o	ssl_ticket.o	\
 		ssl_tls.o
 
+ifeq ($(USE_X25519_AMD64_RADIX_64_24K_OPTIMIZATION),1)
+	OBJS_X25519_IMPL_DIR := ed25519_amd64_64_24k
+endif
+
+ifeq ($(USE_X25519_AMD64_RADIX_51_30K_OPTIMIZATION),1)
+	OBJS_X25519_IMPL_DIR := ed25519_amd64_51_30k
+endif
+
+ifeq ($(OBJS_X25519_IMPL_DIR),)
+	OBJS_X25519_IMPL_DIR := ed25519_ref10
+endif
 
 ifndef WINDOWS
-	OBJS_X25519 := $(patsubst %.c,%.o,$(wildcard ed25519_impl/*.c))
+	OBJS_X25519_C := $(patsubst %.c,%.o,$(wildcard $(OBJS_X25519_IMPL_DIR)/*.c))
+	OBJS_X25519_S := $(patsubst %.s,%.o,$(wildcard $(OBJS_X25519_IMPL_DIR)/*.s))
 else
-	OBJS_X25519 := $(patsubst %.c,%.o,$(wildcard ed25519_impl\\*.c))
+	OBJS_X25519_C := $(patsubst %.c,%.o,$(wildcard $(OBJS_X25519_IMPL_DIR)\\*.c))
+	OBJS_X25519_S := $(patsubst %.s,%.o,$(wildcard $(OBJS_X25519_IMPL_DIR)\\*.s))
 endif
+OBJS_X25519 := $(OBJS_X25519_C) $(OBJS_X25519_S)
 
 .SILENT:
 
@@ -193,9 +207,14 @@ libx25519.dll: $(OBJS_X25519)
 	echo "  CC    $<"
 	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -c -o $@ $<
 
+%.o : %.s
+	echo "  CC    $<"
+	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -c -o $@ $<
+
 clean:
 ifndef WINDOWS
-	rm -f *.o libmbed* libx25519* $(OBJS_X25519)
+	find . -type f -name '*.o' -exec rm {} +
+	rm -f *libmbed* libx25519*
 else
-	del /Q /F *.o libmbed* libx25519* $(OBJS_X25519)
+	del /Q /F /S *.o libmbed* libx25519*
 endif
