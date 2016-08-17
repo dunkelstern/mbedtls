@@ -553,6 +553,10 @@
 #error "MBEDTLS_X25519_C defined, but not all prerequisites"
 #endif
 
+#if defined(MBEDTLS_X25519_C) && !defined(MBEDTLS_SHA512_C)
+#error "MBEDTLS_X25519_C defined, but not all prerequisites"
+#endif
+
 #if defined(MBEDTLS_X25519_C)                  && \
     !defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) && \
     !defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
