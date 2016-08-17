@@ -137,6 +137,20 @@ cleanup
 cmake -D CMAKE_BUILD_TYPE:String=Check .
 tests/scripts/key-exchanges.pl
 
+if uname -a | grep 'Linux.*x86_64' >/dev/null; then
+msg "test: x25519 AMD64 raddix 2^64 24k optimizations (full config)" # ~ 30s
+cleanup
+scripts/config.pl full
+make test USE_X25519_AMD64_RADIX_64_24K_OPTIMIZATION=1
+fi # Linux x86_64
+
+if uname -a | grep 'Linux.*x86_64' >/dev/null; then
+msg "test: x25519 AMD64 raddix 2^51 30k optimizations (full config)" # ~ 30s
+cleanup
+scripts/config.pl full
+make test USE_X25519_AMD64_RADIX_51_30K_OPTIMIZATION=1
+fi # Linux x86_64
+
 msg "build: Unix make, -Os (gcc)" # ~ 30s
 cleanup
 CC=gcc CFLAGS='-Werror -Os' make
