@@ -61,7 +61,7 @@ set(src_crypto
     kdf_wrap.c
     ecies.c
     ecies_envelope.c
-    x25519/x25519.c
+    x25519.c
 )
 
 set(src_x509
@@ -89,7 +89,7 @@ set(src_tls
 )
 
 # Define src_x25519
-add_subdirectory(x25519)
+add_subdirectory(ed25519_impl)
 
 if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-declarations -Wmissing-prototypes")

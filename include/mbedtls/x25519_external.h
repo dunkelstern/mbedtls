@@ -37,15 +37,15 @@
  */
 
 /**
- * @file x25519_external.h
+ * @file mbedtls_x25519_external.h
  * @brief Interface to the specific Ed25519 and Curve25510 ECP implemetation.
  *
  * Provides interface that MUST be implemented within specific Ed25519 and
  * Curve25510 ECP implemetation.
  */
 
-#ifndef VIRGIL_SECURITY_EXTERNAL_X25519_H
-#define VIRGIL_SECURITY_EXTERNAL_X25519_H
+#ifndef MBEDTLS_EXTERNAL_X25519_H
+#define MBEDTLS_EXTERNAL_X25519_H
 
 #include <stddef.h>
 
@@ -60,7 +60,7 @@
  * @return 0 if success, non zero - otherwise.
  * @note signature = (r,s)
  */
-int x25519_ext_edwards_sign(
+int mbedtls_x25519_ext_edwards_sign(
         unsigned char s[32], unsigned char r[32],
         const unsigned char* msg, size_t msg_len,
         const unsigned char public_key[32], const unsigned char az[64]);
@@ -75,7 +75,7 @@ int x25519_ext_edwards_sign(
  * @return 0 if success, non zero - otherwise.
  * @note signature = (r,s)
  */
-int x25519_ext_edwards_verify(
+int mbedtls_x25519_ext_edwards_verify(
         const unsigned char s[32], const unsigned char r[32],
         const unsigned char* msg, size_t msg_len,
         const unsigned char public_key[32]);
@@ -86,7 +86,7 @@ int x25519_ext_edwards_verify(
  * @param[in] private_key Ed25519 private key.
  * @return 0 if success, non zero - otherwise.
  */
-int x25519_ext_edwards_pubkey(unsigned char public_key[32], const unsigned char private_key[32]);
+int mbedtls_x25519_ext_edwards_pubkey(unsigned char public_key[32], const unsigned char private_key[32]);
 
 /**
  * @brief Convert Ed25519 public key to the birationally equivalent Curve25519 public key.
@@ -94,7 +94,8 @@ int x25519_ext_edwards_pubkey(unsigned char public_key[32], const unsigned char 
  * @param[in] ed_public_key Ed25519 public key.
  * @return 0 if success, non zero - otherwise.
  */
-int x25519_ext_edwards_to_montgomery_pubkey(unsigned char curve_public_key[32], const unsigned char ed_public_key[32]);
+int mbedtls_x25519_ext_edwards_to_montgomery_pubkey(
+        unsigned char curve_public_key[32], const unsigned char ed_public_key[32]);
 
 /**
  * @brief Convert Curve25519 public key to the birationally equivalent Ed25519 public key.
@@ -102,7 +103,8 @@ int x25519_ext_edwards_to_montgomery_pubkey(unsigned char curve_public_key[32], 
  * @param[in] curve_public_key Curve25519 public key.
  * @return 0 if success, non zero - otherwise.
  */
-int x25519_ext_montgomery_to_edwards_pubkey(unsigned char ed_public_key[32], const unsigned char curve_public_key[32]);
+int mbedtls_x25519_ext_montgomery_to_edwards_pubkey(
+        unsigned char ed_public_key[32], const unsigned char curve_public_key[32]);
 
 /**
  * @brief Perform ECDH algorithm with Curve25519 keys.
@@ -111,7 +113,7 @@ int x25519_ext_montgomery_to_edwards_pubkey(unsigned char ed_public_key[32], con
  * @param[in] private_key Curve25519 private key.
  * @return 0 if success, non zero - otherwise.
  */
-int x25519_ext_montgomery_key_exchange(
+int mbedtls_x25519_ext_montgomery_key_exchange(
         unsigned char shared_secret[32], const unsigned char public_key[32], const unsigned char private_key[32]);
 
-#endif //VIRGIL_SECURITY_EXTERNAL_X25519_H
+#endif //MBEDTLS_EXTERNAL_X25519_H

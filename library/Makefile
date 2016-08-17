@@ -65,7 +65,7 @@ OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
 		timing.o	version.o			\
 		version_features.o		xtea.o	\
 		kdf.o kdf1.o kdf2.o kdf_wrap.o	\
-		ecies.o	ecies_envelope.o x25519/x25519.o
+		ecies.o	ecies_envelope.o x25519.o
 
 OBJS_X509=	certs.o		pkcs11.o	x509.o		\
 		x509_create.o	x509_crl.o	x509_crt.o	\
@@ -78,9 +78,9 @@ OBJS_TLS=	debug.o		net.o		ssl_cache.o	\
 
 
 ifndef WINDOWS
-	OBJS_X25519 := $(patsubst %.c,%.o,$(wildcard x25519/ed25519_impl/*.c))
+	OBJS_X25519 := $(patsubst %.c,%.o,$(wildcard ed25519_impl/*.c))
 else
-	OBJS_X25519 := $(patsubst %.c,%.o,$(wildcard x25519\\ed25519_impl\\*.c))
+	OBJS_X25519 := $(patsubst %.c,%.o,$(wildcard ed25519_impl\\*.c))
 endif
 
 .SILENT:
@@ -195,7 +195,7 @@ libx25519.dll: $(OBJS_X25519)
 
 clean:
 ifndef WINDOWS
-	rm -f *.o libmbed* libx25519* $(OBJS_X25519) x25519/*.o
+	rm -f *.o libmbed* libx25519* $(OBJS_X25519)
 else
-	del /Q /F *.o libmbed* libx25519* $(OBJS_X25519) x25519\\*.o
+	del /Q /F *.o libmbed* libx25519* $(OBJS_X25519)
 endif

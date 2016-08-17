@@ -41,15 +41,15 @@
 
 #include <string.h>
 
-#include "../x25519.h"
-#include "../x25519_external.h"
+#include "mbedtls/x25519.h"
+#include "mbedtls/x25519_external.h"
 
 #include "fe.h"
 #include "ge.h"
 #include "sc.h"
 
 
-int x25519_ext_edwards_pubkey(unsigned char public_key[32], const unsigned char private_key[32]) {
+int mbedtls_x25519_ext_edwards_pubkey(unsigned char public_key[32], const unsigned char private_key[32]) {
     ge_p3 A;
     ge_scalarmult_base(&A, private_key);
     ge_p3_tobytes(public_key, &A);
@@ -59,7 +59,8 @@ int x25519_ext_edwards_pubkey(unsigned char public_key[32], const unsigned char 
 /*
  * due to CodesInChaos: montgomeryX = (edwardsY + 1)*inverse(1 - edwardsY) mod p
  */
-int x25519_ext_edwards_to_montgomery_pubkey(unsigned char curve_public_key[32], const unsigned char ed_public_key[32]) {
+int mbedtls_x25519_ext_edwards_to_montgomery_pubkey(
+        unsigned char curve_public_key[32], const unsigned char ed_public_key[32]) {
     fe x1, tmp0, tmp1;
 
     fe_frombytes(x1, ed_public_key);
@@ -77,7 +78,9 @@ int x25519_ext_edwards_to_montgomery_pubkey(unsigned char curve_public_key[32], 
 /*
  * edwardsY = (montgomeryX - 1)*inverse(montgomeryX + 1) mod p
  */
-int x25519_ext_montgomery_to_edwards_pubkey(unsigned char ed_public_key[32], const unsigned char curve_public_key[32]) {
+int mbedtls_x25519_ext_montgomery_to_edwards_pubkey(
+        unsigned char ed_public_key[32], const unsigned char curve_public_key[32]) {
+
     fe mont_x, mont_x_minus_one, mont_x_plus_one, inv_mont_x_plus_one, one, ed_y;
 
     fe_frombytes(mont_x, curve_public_key);
@@ -91,26 +94,26 @@ int x25519_ext_montgomery_to_edwards_pubkey(unsigned char ed_public_key[32], con
     return 0;
 }
 
-int x25519_ext_edwards_sign(
+int mbedtls_x25519_ext_edwards_sign(
         unsigned char s[32], unsigned char r[32],
         const unsigned char* msg, size_t msg_len,
         const unsigned char public_key[32], const unsigned char az[64]) {
 
-    x25519_sha512_context_t* hash;
+    mbedtls_x25519_sha512_context_t* hash;
     unsigned char hram[64];
     unsigned char nonce[64];
     unsigned char signature[64];
     ge_p3 R;
 
-    hash = x25519_sha512_alloc();
+    hash = mbedtls_x25519_sha512_alloc();
     if (hash == NULL) {
         return 1;
     }
 
-    x25519_sha512_init(hash);
-    x25519_sha512_update(hash, az + 32, 32);
-    x25519_sha512_update(hash, msg, msg_len);
-    x25519_sha512_finish(hash, nonce);
+    mbedtls_x25519_sha512_init(hash);
+    mbedtls_x25519_sha512_update(hash, az + 32, 32);
+    mbedtls_x25519_sha512_update(hash, msg, msg_len);
+    mbedtls_x25519_sha512_finish(hash, nonce);
 
     sc_reduce(nonce);
     ge_scalarmult_base(&R, nonce);
@@ -118,10 +121,10 @@ int x25519_ext_edwards_sign(
 
     memmove(signature + 32, public_key, 32);
 
-    x25519_sha512_init(hash);
-    x25519_sha512_update(hash, signature, sizeof(signature));
-    x25519_sha512_update(hash, msg, msg_len);
-    x25519_sha512_finish(hash, hram);
+    mbedtls_x25519_sha512_init(hash);
+    mbedtls_x25519_sha512_update(hash, signature, sizeof(signature));
+    mbedtls_x25519_sha512_update(hash, msg, msg_len);
+    mbedtls_x25519_sha512_finish(hash, hram);
 
     sc_reduce(hram);
     sc_muladd(signature + 32, hram, az, nonce); // (R, S)
@@ -129,8 +132,8 @@ int x25519_ext_edwards_sign(
     memmove(r, signature, 32);
     memmove(s, signature + 32, 32);
 
-    x25519_zeroize(nonce, sizeof(nonce));
-    x25519_sha512_free(hash);
+    mbedtls_x25519_zeroize(nonce, sizeof(nonce));
+    mbedtls_x25519_sha512_free(hash);
 
     return 0;
 }
@@ -176,12 +179,12 @@ static int consttime_equal(const unsigned char* x, const unsigned char* y) {
     return !r;
 }
 
-int x25519_ext_edwards_verify(
+int mbedtls_x25519_ext_edwards_verify(
         const unsigned char s[32], const unsigned char r[32],
         const unsigned char* msg, size_t msg_len,
         const unsigned char public_key[32]) {
 
-    x25519_sha512_context_t* hash;
+    mbedtls_x25519_sha512_context_t* hash;
     unsigned char h[64];
     unsigned char checker[32];
     unsigned char signature[64];
@@ -200,16 +203,16 @@ int x25519_ext_edwards_verify(
         return 1;
     }
 
-    hash = x25519_sha512_alloc();
+    hash = mbedtls_x25519_sha512_alloc();
     if (hash == NULL) {
         return -1;
     }
 
-    x25519_sha512_init(hash);
-    x25519_sha512_update(hash, signature, 32);
-    x25519_sha512_update(hash, public_key, 32);
-    x25519_sha512_update(hash, msg, msg_len);
-    x25519_sha512_finish(hash, h);
+    mbedtls_x25519_sha512_init(hash);
+    mbedtls_x25519_sha512_update(hash, signature, 32);
+    mbedtls_x25519_sha512_update(hash, public_key, 32);
+    mbedtls_x25519_sha512_update(hash, msg, msg_len);
+    mbedtls_x25519_sha512_finish(hash, h);
 
     sc_reduce(h);
     ge_double_scalarmult_vartime(&R, h, &A, signature + 32);
@@ -222,7 +225,7 @@ int x25519_ext_edwards_verify(
     return 0;
 }
 
-int x25519_ext_montgomery_key_exchange(
+int mbedtls_x25519_ext_montgomery_key_exchange(
         unsigned char shared_secret[32], const unsigned char public_key[32], const unsigned char private_key[32]) {
 
     fe x1;

@@ -63,7 +63,7 @@
 #endif
 
 #if defined(MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-#include "x25519/x25519.h"
+#include "mbedtls/x25519.h"
 #endif /* MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED || */
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \
@@ -1641,23 +1641,23 @@ static int mbedtls_curve25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point 
              int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 {
     int ret;
-    x25519_public_key_t public_key;
-    x25519_private_key_t private_key;
+    mbedtls_x25519_public_key_t public_key;
+    mbedtls_x25519_private_key_t private_key;
 
     (void) grp;
     (void) P;
     (void) f_rng;
     (void) p_rng;
 
-    x25519_public_key_init(&public_key);
-    x25519_private_key_init(&private_key);
+    mbedtls_x25519_public_key_init(&public_key);
+    mbedtls_x25519_private_key_init(&private_key);
 
     // m -> m(BE) -> m(LE)
     MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( m, private_key.p, private_key.len ) );
     reverse_bytes( private_key.p, private_key.p + private_key.len );
 
     // compute public key
-    if( x25519_montgomery_getpub( &public_key, &private_key ) )
+    if( mbedtls_x25519_montgomery_getpub( &public_key, &private_key ) )
     {
         ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
         goto cleanup;
@@ -1670,8 +1670,8 @@ static int mbedtls_curve25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point 
     mbedtls_mpi_free( &R->Y );
 
 cleanup:
-    x25519_public_key_free(&public_key);
-    x25519_private_key_free(&private_key);
+    mbedtls_x25519_public_key_free(&public_key);
+    mbedtls_x25519_private_key_free(&private_key);
     return( ret );
 }
 #endif /* MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED */
@@ -1685,23 +1685,23 @@ static int mbedtls_ed25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
         int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
 {
     int ret;
-    x25519_public_key_t public_key;
-    x25519_secret_key_t secret_key;
+    mbedtls_x25519_public_key_t public_key;
+    mbedtls_x25519_secret_key_t secret_key;
 
     (void) grp;
     (void) P;
     (void) f_rng;
     (void) p_rng;
 
-    x25519_public_key_init(&public_key);
-    x25519_secret_key_init(&secret_key);
+    mbedtls_x25519_public_key_init(&public_key);
+    mbedtls_x25519_secret_key_init(&secret_key);
 
     // m -> m(BE) -> m(LE)
     MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( m, secret_key.p, secret_key.len ) );
     reverse_bytes( secret_key.p, secret_key.p + secret_key.len );
 
     // compute public key
-    if(x25519_edwards_getpub(&public_key, &secret_key) )
+    if(mbedtls_x25519_edwards_getpub(&public_key, &secret_key) )
     {
         ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
         goto cleanup;
@@ -1714,8 +1714,8 @@ static int mbedtls_ed25519_getpub( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
     mbedtls_mpi_free( &R->X );
 
 cleanup:
-    x25519_public_key_free(&public_key);
-    x25519_secret_key_free(&secret_key);
+    mbedtls_x25519_public_key_free(&public_key);
+    mbedtls_x25519_secret_key_free(&secret_key);
     return( ret );
 }
 #endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
