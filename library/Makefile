@@ -34,7 +34,7 @@ endif
 SOEXT_TLS=so.10
 SOEXT_X509=so.0
 SOEXT_CRYPTO=so.0
-SOEXT_ED25519=so.0
+SOEXT_X25519=so.0
 
 DLEXT=so
 # OSX shared library extension:
@@ -78,9 +78,9 @@ OBJS_TLS=	debug.o		net.o		ssl_cache.o	\
 
 
 ifndef WINDOWS
-	OBJS_ED25519 := $(patsubst %.c,%.o,$(wildcard x25519/ed25519_impl/*.c))
+	OBJS_X25519 := $(patsubst %.c,%.o,$(wildcard x25519/ed25519_impl/*.c))
 else
-	OBJS_ED25519 := $(patsubst %.c,%.o,$(wildcard x25519\\ed25519_impl\\*.c))
+	OBJS_X25519 := $(patsubst %.c,%.o,$(wildcard x25519\\ed25519_impl\\*.c))
 endif
 
 .SILENT:
@@ -93,9 +93,9 @@ else
 all: shared static
 endif
 
-static: libmbedcrypto.a libmbedx509.a libmbedtls.a libed25519.a
+static: libmbedcrypto.a libmbedx509.a libmbedtls.a libx25519.a
 
-shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT) libed25519.$(DLEXT)
+shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT) libx25519.$(DLEXT)
 
 # tls
 libmbedtls.a: $(OBJS_TLS)
@@ -166,28 +166,28 @@ libmbedcrypto.dll: $(OBJS_CRYPTO)
 	echo "  LD    $@"
 	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS_CRYPTO) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
 
-# ed25519
-libed25519.a: $(OBJS_ED25519)
+# x25519
+libx25519.a: $(OBJS_X25519)
 	echo "  AR    $@"
-	$(AR) rc $@ $(OBJS_ED25519)
+	$(AR) rc $@ $(OBJS_X25519)
 	echo "  RL    $@"
 	$(AR) s $@
 
-libed25519.$(SOEXT_ED25519): $(OBJS_ED25519)
+libx25519.$(SOEXT_X25519): $(OBJS_X25519)
 	echo "  LD    $@"
-	$(CC) -shared -Wl,-soname,$@ $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS_ED25519)
+	$(CC) -shared -Wl,-soname,$@ $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS_X25519)
 
-libed25519.so: libed25519.$(SOEXT_ED25519)
+libx25519.so: libx25519.$(SOEXT_X25519)
 	echo "  LN    $@ -> $<"
 	ln -sf $< $@
 
-libed25519.dylib: $(OBJS_ED25519)
+libx25519.dylib: $(OBJS_X25519)
 	echo "  LD    $@"
-	$(CC) -dynamiclib $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS_ED25519)
+	$(CC) -dynamiclib $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS_X25519)
 
-libed25519.dll: $(OBJS_ED25519)
+libx25519.dll: $(OBJS_X25519)
 	echo "  LD    $@"
-	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS_ED25519) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
+	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS_X25519) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
 
 %.o : %.c
 	echo "  CC    $<"
@@ -195,7 +195,7 @@ libed25519.dll: $(OBJS_ED25519)
 
 clean:
 ifndef WINDOWS
-	rm -f *.o libmbed* libed25519* $(OBJS_ED25519) x25519/*.o
+	rm -f *.o libmbed* libx25519* $(OBJS_X25519) x25519/*.o
 else
-	del /Q /F *.o libmbed* libed25519* $(OBJS_ED25519) x25519\\*.o
+	del /Q /F *.o libmbed* libx25519* $(OBJS_X25519) x25519\\*.o
 endif
