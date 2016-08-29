@@ -162,22 +162,43 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.0)
             INSTALL_DESTINATION "${LIB_INSTALL_DIR}/cmake")
 endif(NOT CMAKE_VERSION VERSION_LESS 3.0)
 
+#
+# To fix compilation problem: relocation R_X86_64_32 against 'a local symbol' can not be
+# used when making a shared object; recompile with -fPIC
+# See http://www.cmake.org/pipermail/cmake/2007-May/014350.html
+#
+if (USE_X25519_AMD64_RADIX_64_24K_OPTIMIZATION OR USE_X25519_AMD64_RADIX_51_30K_OPTIMIZATION)
+  set (COMPILE_FLAGS "-fPIC")
+endif (USE_X25519_AMD64_RADIX_64_24K_OPTIMIZATION OR USE_X25519_AMD64_RADIX_51_30K_OPTIMIZATION)
+
 # Create and install targets
 if(USE_STATIC_MBEDTLS_LIBRARY)
     add_library(${x25519_static_target} STATIC ${src_x25519})
     set_target_properties(${x25519_static_target} PROPERTIES OUTPUT_NAME x25519)
+    if (COMPILE_FLAGS)
+        set_target_properties(${x25519_static_target} PROPERTIES COMPILE_FLAGS ${COMPILE_FLAGS})
+    endif (COMPILE_FLAGS)
     target_link_libraries(${x25519_static_target} ${libs})
 
     add_library(${mbedcrypto_static_target} STATIC ${src_crypto})
     set_target_properties(${mbedcrypto_static_target} PROPERTIES OUTPUT_NAME mbedcrypto)
+    if (COMPILE_FLAGS)
+        set_target_properties(${mbedcrypto_static_target} PROPERTIES COMPILE_FLAGS ${COMPILE_FLAGS})
+    endif (COMPILE_FLAGS)
     target_link_libraries(${mbedcrypto_static_target} ${libs} ${x25519_static_target})
 
     add_library(${mbedx509_static_target} STATIC ${src_x509})
     set_target_properties(${mbedx509_static_target} PROPERTIES OUTPUT_NAME mbedx509)
+    if (COMPILE_FLAGS)
+        set_target_properties(${mbedx509_static_target} PROPERTIES COMPILE_FLAGS ${COMPILE_FLAGS})
+    endif (COMPILE_FLAGS)
     target_link_libraries(${mbedx509_static_target} ${libs} ${mbedcrypto_static_target})
 
     add_library(${mbedtls_static_target} STATIC ${src_tls})
     set_target_properties(${mbedtls_static_target} PROPERTIES OUTPUT_NAME mbedtls)
+    if (COMPILE_FLAGS)
+        set_target_properties(${mbedtls_static_target} PROPERTIES COMPILE_FLAGS ${COMPILE_FLAGS})
+    endif (COMPILE_FLAGS)
     target_link_libraries(${mbedtls_static_target} ${libs} ${mbedx509_static_target})
 
     if(CMAKE_VERSION VERSION_LESS 3.0)
