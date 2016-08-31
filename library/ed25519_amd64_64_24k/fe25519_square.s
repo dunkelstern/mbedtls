@@ -426,8 +426,13 @@ adc %rdx,%rcx
 mov  %r11,%rax
 
 # qhasm:   (uint128) squarerdx squarerax = squarerax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   squarer4 = squarerax
 # asm 1: mov  <squarerax=int64#7,>squarer4=int64#2
 # asm 2: mov  <squarerax=%rax,>squarer4=%rsi
@@ -444,8 +449,13 @@ mov  %r12,%rax
 mov  %rdx,%r11
 
 # qhasm:   (uint128) squarerdx squarerax = squarerax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? squarer5 += squarerax
 # asm 1: add  <squarerax=int64#7,<squarer5=int64#9
 # asm 2: add  <squarerax=%rax,<squarer5=%r11
@@ -467,8 +477,13 @@ mov  $0,%r12
 adc %rdx,%r12
 
 # qhasm:   (uint128) squarerdx squarerax = squarerax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? squarer6 += squarerax
 # asm 1: add  <squarerax=int64#7,<squarer6=int64#10
 # asm 2: add  <squarerax=%rax,<squarer6=%r12
@@ -490,8 +505,13 @@ mov  $0,%rcx
 adc %rdx,%rcx
 
 # qhasm:   (uint128) squarerdx squarerax = squarerax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? squarer7 += squarerax
 # asm 1: add  <squarerax=int64#7,<squarer7=int64#4
 # asm 2: add  <squarerax=%rax,<squarer7=%rcx

@@ -667,8 +667,13 @@ adc %rdx,%r10
 mov  %rcx,%rax
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   mulr4 = mulrax
 # asm 1: mov  <mulrax=int64#7,>mulr4=int64#4
 # asm 2: mov  <mulrax=%rax,>mulr4=%rcx
@@ -685,8 +690,13 @@ mov  %r8,%rax
 mov  %rdx,%r8
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr5 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr5=int64#5
 # asm 2: add  <mulrax=%rax,<mulr5=%r8
@@ -708,8 +718,13 @@ mov  $0,%r9
 adc %rdx,%r9
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr6 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr6=int64#6
 # asm 2: add  <mulrax=%rax,<mulr6=%r9
@@ -731,8 +746,13 @@ mov  $0,%r10
 adc %rdx,%r10
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr7 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr7=int64#8
 # asm 2: add  <mulrax=%rax,<mulr7=%r10
@@ -1349,8 +1369,13 @@ adc %rdx,%r10
 mov  %rcx,%rax
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   mulr4 = mulrax
 # asm 1: mov  <mulrax=int64#7,>mulr4=int64#4
 # asm 2: mov  <mulrax=%rax,>mulr4=%rcx
@@ -1367,8 +1392,13 @@ mov  %r8,%rax
 mov  %rdx,%r8
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr5 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr5=int64#5
 # asm 2: add  <mulrax=%rax,<mulr5=%r8
@@ -1390,8 +1420,13 @@ mov  $0,%r9
 adc %rdx,%r9
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr6 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr6=int64#6
 # asm 2: add  <mulrax=%rax,<mulr6=%r9
@@ -1413,8 +1448,13 @@ mov  $0,%r10
 adc %rdx,%r10
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr7 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr7=int64#8
 # asm 2: add  <mulrax=%rax,<mulr7=%r10
@@ -2031,8 +2071,13 @@ adc %rdx,%r10
 mov  %rcx,%rax
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   mulr4 = mulrax
 # asm 1: mov  <mulrax=int64#7,>mulr4=int64#4
 # asm 2: mov  <mulrax=%rax,>mulr4=%rcx
@@ -2049,8 +2094,13 @@ mov  %r8,%rax
 mov  %rdx,%r8
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr5 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr5=int64#5
 # asm 2: add  <mulrax=%rax,<mulr5=%r8
@@ -2072,8 +2122,13 @@ mov  $0,%r9
 adc %rdx,%r9
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr6 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr6=int64#6
 # asm 2: add  <mulrax=%rax,<mulr6=%r9
@@ -2095,8 +2150,13 @@ mov  $0,%r10
 adc %rdx,%r10
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr7 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr7=int64#8
 # asm 2: add  <mulrax=%rax,<mulr7=%r10
@@ -2713,8 +2773,13 @@ adc %rdx,%r10
 mov  %rcx,%rax
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   mulr4 = mulrax
 # asm 1: mov  <mulrax=int64#7,>mulr4=int64#2
 # asm 2: mov  <mulrax=%rax,>mulr4=%rsi
@@ -2731,8 +2796,13 @@ mov  %r8,%rax
 mov  %rdx,%rcx
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr5 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr5=int64#4
 # asm 2: add  <mulrax=%rax,<mulr5=%rcx
@@ -2754,8 +2824,13 @@ mov  $0,%r8
 adc %rdx,%r8
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr6 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr6=int64#5
 # asm 2: add  <mulrax=%rax,<mulr6=%r8
@@ -2777,8 +2852,13 @@ mov  $0,%r9
 adc %rdx,%r9
 
 # qhasm:   (uint128) mulrdx mulrax = mulrax * *(uint64 *)&crypto_sign_ed25519_amd64_64_38
-mulq  crypto_sign_ed25519_amd64_64_38
+# patched: mulq  crypto_sign_ed25519_amd64_64_38
 
+pushq %r15
+movq crypto_sign_ed25519_amd64_64_38@GOTPCREL(%rip), %r15
+mulq  (%r15)
+
+popq %r15
 # qhasm:   carry? mulr7 += mulrax
 # asm 1: add  <mulrax=int64#7,<mulr7=int64#6
 # asm 2: add  <mulrax=%rax,<mulr7=%r9

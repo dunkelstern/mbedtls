@@ -651,7 +651,9 @@ adc %rdx,%r14
 # qhasm:   squareredmask = *(uint64 *) &crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,>squareredmask=int64#3
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,>squareredmask=%rdx
-movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,%rdx
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,%rdx
+movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51@GOTPCREL(%rip), %rdx
+movq (%rdx), %rdx
 
 # qhasm:   squarer01 = (squarer01.a0) << 13
 # asm 1: shld $13,<a0=int64#4,<squarer01=int64#5
@@ -1226,7 +1228,9 @@ adc %rdx,%r14
 # qhasm:   squareredmask = *(uint64 *) &crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,>squareredmask=int64#3
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,>squareredmask=%rdx
-movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,%rdx
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,%rdx
+movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51@GOTPCREL(%rip), %rdx
+movq (%rdx), %rdx
 
 # qhasm:   squarer01 = (squarer01.b0) << 13
 # asm 1: shld $13,<b0=int64#4,<squarer01=int64#5
@@ -1801,7 +1805,9 @@ adc %rdx,%r14
 # qhasm:   squareredmask = *(uint64 *) &crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,>squareredmask=int64#3
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,>squareredmask=%rdx
-movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,%rdx
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,%rdx
+movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51@GOTPCREL(%rip), %rdx
+movq (%rdx), %rdx
 
 # qhasm:   squarer01 = (squarer01.c0) << 13
 # asm 1: shld $13,<c0=int64#4,<squarer01=int64#5
@@ -2041,27 +2047,37 @@ movq %r11,168(%rsp)
 # qhasm: d0 = *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P0
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_2P0,>d0=int64#3
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_2P0,>d0=%rdx
-movq crypto_sign_ed25519_amd64_51_30k_batch_2P0,%rdx
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_2P0,%rdx
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P0@GOTPCREL(%rip), %rdx
+movq (%rdx), %rdx
 
 # qhasm: d1 = *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P1234
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,>d1=int64#4
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,>d1=%rcx
-movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%rcx
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%rcx
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234@GOTPCREL(%rip), %rcx
+movq (%rcx), %rcx
 
 # qhasm: d2 = *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P1234
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,>d2=int64#5
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,>d2=%r8
-movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%r8
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%r8
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234@GOTPCREL(%rip), %r8
+movq (%r8), %r8
 
 # qhasm: d3 = *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P1234
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,>d3=int64#6
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,>d3=%r9
-movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%r9
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%r9
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234@GOTPCREL(%rip), %r9
+movq (%r9), %r9
 
 # qhasm: d4 = *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P1234
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,>d4=int64#7
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,>d4=%rax
-movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%rax
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%rax
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234@GOTPCREL(%rip), %rax
+movq (%rax), %rax
 
 # qhasm: e0 = d0
 # asm 1: mov  <d0=int64#3,>e0=int64#8
@@ -2266,27 +2282,47 @@ movq   %r14,72(%rdi)
 # qhasm: d0 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P0
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_2P0,<d0=int64#3
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_2P0,<d0=%rdx
-add  crypto_sign_ed25519_amd64_51_30k_batch_2P0,%rdx
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_2P0,%rdx
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P0@GOTPCREL(%rip), %r15
+add  (%r15),%rdx
+popq %r15
 
 # qhasm: d1 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P1234
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,<d1=int64#4
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,<d1=%rcx
-add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%rcx
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%rcx
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234@GOTPCREL(%rip), %r15
+add  (%r15),%rcx
+popq %r15
 
 # qhasm: d2 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P1234
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,<d2=int64#5
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,<d2=%r8
-add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%r8
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%r8
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234@GOTPCREL(%rip), %r15
+add  (%r15),%r8
+popq %r15
 
 # qhasm: d3 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P1234
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,<d3=int64#6
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,<d3=%r9
-add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%r9
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%r9
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234@GOTPCREL(%rip), %r15
+add  (%r15),%r9
+popq %r15
 
 # qhasm: d4 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_2P1234
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,<d4=int64#7
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,<d4=%rax
-add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%rax
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_2P1234,%rax
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_2P1234@GOTPCREL(%rip), %r15
+add  (%r15),%rax
+popq %r15
 
 # qhasm: d0 -= b0_stack
 # asm 1: subq <b0_stack=stack64#13,<d0=int64#3
@@ -2341,27 +2377,47 @@ movq   %rax,112(%rdi)
 # qhasm: rz0 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_4P0
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_4P0,<rz0=int64#8
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_4P0,<rz0=%r10
-add  crypto_sign_ed25519_amd64_51_30k_batch_4P0,%r10
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_4P0,%r10
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_4P0@GOTPCREL(%rip), %r15
+add  (%r15),%r10
+popq %r15
 
 # qhasm: rz1 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_4P1234
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,<rz1=int64#9
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,<rz1=%r11
-add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,%r11
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,%r11
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_4P1234@GOTPCREL(%rip), %r15
+add  (%r15),%r11
+popq %r15
 
 # qhasm: rz2 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_4P1234
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,<rz2=int64#10
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,<rz2=%r12
-add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,%r12
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,%r12
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_4P1234@GOTPCREL(%rip), %r15
+add  (%r15),%r12
+popq %r15
 
 # qhasm: rz3 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_4P1234
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,<rz3=int64#11
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,<rz3=%r13
-add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,%r13
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,%r13
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_4P1234@GOTPCREL(%rip), %r15
+add  (%r15),%r13
+popq %r15
 
 # qhasm: rz4 += *(uint64 *)&crypto_sign_ed25519_amd64_51_30k_batch_4P1234
 # asm 1: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,<rz4=int64#12
 # asm 2: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,<rz4=%r14
-add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,%r14
+# patched: add  crypto_sign_ed25519_amd64_51_30k_batch_4P1234,%r14
+pushq %r15
+movq crypto_sign_ed25519_amd64_51_30k_batch_4P1234@GOTPCREL(%rip), %r15
+add  (%r15),%r14
+popq %r15
 
 # qhasm: rz0 -= c0_stack
 # asm 1: subq <c0_stack=stack64#18,<rz0=int64#8
@@ -2851,7 +2907,9 @@ adc %rdx,%r13
 # qhasm:   squareredmask = *(uint64 *) &crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51
 # asm 1: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,>squareredmask=int64#3
 # asm 2: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,>squareredmask=%rdx
-movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,%rdx
+# patched: movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51,%rdx
+movq crypto_sign_ed25519_amd64_51_30k_batch_REDMASK51@GOTPCREL(%rip), %rdx
+movq (%rdx), %rdx
 
 # qhasm:   squarer01 = (squarer01.rx0) << 13
 # asm 1: shld $13,<rx0=int64#2,<squarer01=int64#4
