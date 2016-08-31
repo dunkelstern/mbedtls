@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Generate error.c
+# Fix the problem: supercop cannot be dynamically linked
 #
 # Usage: make_ed25519_relocatable.pl work_dir const_file_name...
 
