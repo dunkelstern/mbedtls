@@ -41,26 +41,41 @@
 
 #include <string.h>
 
-#include "mbedtls/x25519.h"
-#include "mbedtls/x25519_external.h"
+#include "mbedtls/ed25519.h"
+#include "../common/sha512.h"
 
 #include "fe.h"
 #include "ge.h"
 #include "sc.h"
 
+/* Implementation that should never be optimized out by the compiler */
+static void mbedtls_ed25519_zeroize( void *v, size_t n ) {
+    volatile unsigned char *p = v; while( n-- ) *p++ = 0;
+}
 
-int mbedtls_x25519_ext_edwards_pubkey(unsigned char public_key[32], const unsigned char private_key[32]) {
+int mbedtls_ed25519_get_pubkey(unsigned char public_key[32], const unsigned char secret_key[32]) {
+    unsigned char az[64];
     ge_p3 A;
-    ge_scalarmult_base(&A, private_key);
+
+    mbedtls_ed25519_sha512(secret_key, 32, az, 0);
+
+    az[0] &= 248;
+    az[31] &= 63;
+    az[31] |= 64;
+
+    ge_scalarmult_base(&A, az);
     ge_p3_tobytes(public_key, &A);
+
+    mbedtls_ed25519_zeroize(az, sizeof(az));
     return 0;
 }
 
 /*
  * due to CodesInChaos: montgomeryX = (edwardsY + 1)*inverse(1 - edwardsY) mod p
  */
-int mbedtls_x25519_ext_edwards_to_montgomery_pubkey(
+int mbedtls_ed25519_pubkey_to_curve25519(
         unsigned char curve_public_key[32], const unsigned char ed_public_key[32]) {
+
     fe x1, tmp0, tmp1;
 
     fe_frombytes(x1, ed_public_key);
@@ -75,45 +90,46 @@ int mbedtls_x25519_ext_edwards_to_montgomery_pubkey(
     return 0;
 }
 
-/*
- * edwardsY = (montgomeryX - 1)*inverse(montgomeryX + 1) mod p
- */
-int mbedtls_x25519_ext_montgomery_to_edwards_pubkey(
-        unsigned char ed_public_key[32], const unsigned char curve_public_key[32]) {
+int mbedtls_ed25519_key_to_curve25519(
+        unsigned char curve_secret_key[32], const unsigned char ed_secret_key[32]) {
 
-    fe mont_x, mont_x_minus_one, mont_x_plus_one, inv_mont_x_plus_one, one, ed_y;
+    unsigned char az[64];
 
-    fe_frombytes(mont_x, curve_public_key);
-    fe_1(one);
-    fe_sub(mont_x_minus_one, mont_x, one);
-    fe_add(mont_x_plus_one, mont_x, one);
-    fe_invert(inv_mont_x_plus_one, mont_x_plus_one);
-    fe_mul(ed_y, mont_x_minus_one, inv_mont_x_plus_one);
-    fe_tobytes(ed_public_key, ed_y);
+    mbedtls_ed25519_sha512(ed_secret_key, 32, az, 0);
+    memcpy(curve_secret_key, az, 32);
+    mbedtls_ed25519_zeroize(az, sizeof(az));
 
     return 0;
 }
 
-int mbedtls_x25519_ext_edwards_sign(
-        unsigned char s[32], unsigned char r[32],
-        const unsigned char* msg, size_t msg_len,
-        const unsigned char public_key[32], const unsigned char az[64]) {
 
-    mbedtls_x25519_sha512_context_t* hash;
+int mbedtls_ed25519_sign(
+        unsigned char signature[64],
+        const unsigned char secret_key[32],
+        const unsigned char* msg, size_t msg_len) {
+
+    mbedtls_ed25519_sha512_context hash;
     unsigned char hram[64];
     unsigned char nonce[64];
-    unsigned char signature[64];
-    ge_p3 R;
+    unsigned char az[64];
+    unsigned char public_key[32];
+    ge_p3 A, R;
 
-    hash = mbedtls_x25519_sha512_alloc();
-    if (hash == NULL) {
-        return 1;
-    }
+    mbedtls_ed25519_sha512_starts(&hash, 0);
+    mbedtls_ed25519_sha512_update(&hash, secret_key, 32);
+    mbedtls_ed25519_sha512_finish(&hash, az);
 
-    mbedtls_x25519_sha512_init(hash);
-    mbedtls_x25519_sha512_update(hash, az + 32, 32);
-    mbedtls_x25519_sha512_update(hash, msg, msg_len);
-    mbedtls_x25519_sha512_finish(hash, nonce);
+    az[0] &= 248;
+    az[31] &= 63;
+    az[31] |= 64;
+
+    ge_scalarmult_base(&A, az);
+    ge_p3_tobytes(public_key, &A);
+
+    mbedtls_ed25519_sha512_starts(&hash, 0);
+    mbedtls_ed25519_sha512_update(&hash, az + 32, 32);
+    mbedtls_ed25519_sha512_update(&hash, msg, msg_len);
+    mbedtls_ed25519_sha512_finish(&hash, nonce);
 
     sc_reduce(nonce);
     ge_scalarmult_base(&R, nonce);
@@ -121,19 +137,17 @@ int mbedtls_x25519_ext_edwards_sign(
 
     memmove(signature + 32, public_key, 32);
 
-    mbedtls_x25519_sha512_init(hash);
-    mbedtls_x25519_sha512_update(hash, signature, sizeof(signature));
-    mbedtls_x25519_sha512_update(hash, msg, msg_len);
-    mbedtls_x25519_sha512_finish(hash, hram);
+    mbedtls_ed25519_sha512_starts(&hash, 0);
+    mbedtls_ed25519_sha512_update(&hash, signature, 64);
+    mbedtls_ed25519_sha512_update(&hash, msg, msg_len);
+    mbedtls_ed25519_sha512_finish(&hash, hram);
 
     sc_reduce(hram);
     sc_muladd(signature + 32, hram, az, nonce); // (R, S)
 
-    memmove(r, signature, 32);
-    memmove(s, signature + 32, 32);
-
-    mbedtls_x25519_zeroize(nonce, sizeof(nonce));
-    mbedtls_x25519_sha512_free(hash);
+    mbedtls_ed25519_zeroize(nonce, sizeof(nonce));
+    mbedtls_ed25519_zeroize(az, sizeof(az));
+    mbedtls_ed25519_sha512_free(&hash);
 
     return 0;
 }
@@ -179,21 +193,17 @@ static int consttime_equal(const unsigned char* x, const unsigned char* y) {
     return !r;
 }
 
-int mbedtls_x25519_ext_edwards_verify(
-        const unsigned char s[32], const unsigned char r[32],
-        const unsigned char* msg, size_t msg_len,
-        const unsigned char public_key[32]) {
+int mbedtls_ed25519_verify(
+        const unsigned char signature[64],
+        const unsigned char public_key[32],
+        const unsigned char* msg, size_t msg_len) {
 
-    mbedtls_x25519_sha512_context_t* hash;
+    mbedtls_ed25519_sha512_context hash;
     unsigned char h[64];
     unsigned char checker[32];
-    unsigned char signature[64];
     ge_p3 A;
     ge_p2 R;
 
-
-    memmove(signature, r, 32);
-    memmove(signature + 32, s, 32);
 
     if (signature[63] & 224) {
         return 1;
@@ -203,16 +213,11 @@ int mbedtls_x25519_ext_edwards_verify(
         return 1;
     }
 
-    hash = mbedtls_x25519_sha512_alloc();
-    if (hash == NULL) {
-        return -1;
-    }
-
-    mbedtls_x25519_sha512_init(hash);
-    mbedtls_x25519_sha512_update(hash, signature, 32);
-    mbedtls_x25519_sha512_update(hash, public_key, 32);
-    mbedtls_x25519_sha512_update(hash, msg, msg_len);
-    mbedtls_x25519_sha512_finish(hash, h);
+    mbedtls_ed25519_sha512_starts(&hash, 0);
+    mbedtls_ed25519_sha512_update(&hash, signature, 32);
+    mbedtls_ed25519_sha512_update(&hash, public_key, 32);
+    mbedtls_ed25519_sha512_update(&hash, msg, msg_len);
+    mbedtls_ed25519_sha512_finish(&hash, h);
 
     sc_reduce(h);
     ge_double_scalarmult_vartime(&R, h, &A, signature + 32);
@@ -225,8 +230,34 @@ int mbedtls_x25519_ext_edwards_verify(
     return 0;
 }
 
-int mbedtls_x25519_ext_montgomery_key_exchange(
-        unsigned char shared_secret[32], const unsigned char public_key[32], const unsigned char private_key[32]) {
+/**
+ * @brief Derive Curve25519 public key from the secret key.
+ * @param[out] public_key Curve25519 public key.
+ * @param[in] secret_key Curve25519 secret key.
+ * @return 0 if success, non zero - otherwise.
+ */
+int mbedtls_curve25519_get_pubkey(unsigned char public_key[32], const unsigned char secret_key[32]) {
+
+    unsigned char e[32];
+    ge_p3 A;
+
+    memcpy(e, secret_key, sizeof(e));
+
+    e[0] &= 248;
+    e[31] &= 63;
+    e[31] |= 64;
+
+    ge_scalarmult_base(&A, e);
+    ge_p3_tobytes(public_key, &A);
+
+    mbedtls_ed25519_pubkey_to_curve25519(public_key, public_key);
+
+    mbedtls_ed25519_zeroize(e, sizeof(e));
+    return 0;
+}
+
+int mbedtls_curve25519_key_exchange(
+        unsigned char shared_secret[32], const unsigned char public_key[32], const unsigned char secret_key[32]) {
 
     fe x1;
     fe x2;
@@ -239,6 +270,7 @@ int mbedtls_x25519_ext_montgomery_key_exchange(
     int pos;
     unsigned int swap;
     unsigned int b;
+    unsigned char e[32];
 
     fe_frombytes(x1, public_key);
 
@@ -247,9 +279,16 @@ int mbedtls_x25519_ext_montgomery_key_exchange(
     fe_copy(x3, x1);
     fe_1(z3);
 
+
+    memcpy(e, secret_key, sizeof(e));
+
+    e[0] &= 248;
+    e[31] &= 63;
+    e[31] |= 64;
+
     swap = 0;
     for (pos = 254; pos >= 0; --pos) {
-        b = private_key[pos / 8] >> (pos & 7);
+        b = e[pos / 8] >> (pos & 7);
         b &= 1;
         swap ^= b;
         fe_cswap(x2, x3, swap);
@@ -283,6 +322,8 @@ int mbedtls_x25519_ext_montgomery_key_exchange(
     fe_invert(z2, z2);
     fe_mul(x2, x2, z2);
     fe_tobytes(shared_secret, x2);
+
+    mbedtls_ed25519_zeroize(e, sizeof(e));
 
     return 0;
 }

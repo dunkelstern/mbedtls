@@ -685,37 +685,6 @@ cleanup:
 }
 #endif /* MBEDTLS_ECP_DP_CURVE25519_ENABLED */
 
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-/*
- * Specialized function for creating the Ed25519 group
- */
-static int ecp_use_ed25519( mbedtls_ecp_group *grp )
-{
-    int ret;
-
-    /* P = 2^255 - 19 */
-    MBEDTLS_MPI_CHK( mbedtls_mpi_lset( &grp->P, 1 ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_shift_l( &grp->P, 255 ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_sub_int( &grp->P, &grp->P, 19 ) );
-    grp->pbits = mbedtls_mpi_bitlen( &grp->P );
-
-    /* X intentionaly not set, since we use y/z coordinates.
-     * This is used as a marker to identify Edwards curves! */
-    MBEDTLS_MPI_CHK( mbedtls_mpi_lset( &grp->G.Y, 9 ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_lset( &grp->G.Z, 1 ) );
-    mbedtls_mpi_free( &grp->G.X );
-
-    /* Actually, the required msb for private keys */
-    grp->nbits = 254;
-
-cleanup:
-    if( ret != 0 )
-        mbedtls_ecp_group_free( grp );
-
-    return( ret );
-}
-#endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
-
 /*
  * Set a group using well-known domain parameters
  */
@@ -795,12 +764,6 @@ int mbedtls_ecp_group_load( mbedtls_ecp_group *grp, mbedtls_ecp_group_id id )
             grp->modp = ecp_mod_p255;
             return( ecp_use_curve25519( grp ) );
 #endif /* MBEDTLS_ECP_DP_CURVE25519_ENABLED */
-
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-        case MBEDTLS_ECP_DP_ED25519:
-            grp->modp = NULL;
-            return( ecp_use_ed25519( grp ) );
-#endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
 
         default:
             mbedtls_ecp_group_free( grp );

@@ -38,131 +38,6 @@
 
 #include <string.h>
 
-#if defined(MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-#include "mbedtls/x25519.h"
-#endif /* MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED */
-
-#if defined(MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-/*
- * Swap given bytes
- */
-static void swap(unsigned char *a, unsigned char *b) {
-    unsigned char t = *a; *a = *b; *b = t;
-}
-
-/*
- * Reverse bytes in range [first, last)
- */
-static void reverse_bytes(unsigned char *first, unsigned char *last) {
-    while ((first!=last)&&(first!=--last)) {
-        swap (first,last);
-        ++first;
-    }
-}
-#endif /* MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED */
-
-#if defined(MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED)
-/*
- * Compute shared secret on the Curve25519 curve
- */
-static int mbedtls_ecdh_compute_shared_curve25519( mbedtls_ecp_group *grp, mbedtls_mpi *z,
-                         const mbedtls_ecp_point *Q, const mbedtls_mpi *d,
-                         int (*f_rng)(void *, unsigned char *, size_t),
-                         void *p_rng )
-{
-    int ret;
-    mbedtls_x25519_shared_key_t shared_key;
-    mbedtls_x25519_public_key_t public_key;
-    mbedtls_x25519_private_key_t private_key;
-
-    (void) f_rng;
-    (void) p_rng;
-
-    if( grp->id != MBEDTLS_ECP_DP_CURVE25519 )
-        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
-
-    mbedtls_x25519_shared_key_init(&shared_key);
-    mbedtls_x25519_private_key_init(&private_key);
-    mbedtls_x25519_public_key_init(&public_key);
-
-    // Q -> Q(BE) -> Q(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->X, public_key.p, public_key.len ) );
-    reverse_bytes( public_key.p, public_key.p + public_key.len );
-
-    // d -> d(BE) -> d(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, private_key.p, private_key.len ) );
-    reverse_bytes( private_key.p, private_key.p + private_key.len );
-
-    // compute shared secret
-    if( mbedtls_x25519_montgomery_key_exchange( &shared_key, &public_key, &private_key ) )
-    {
-        ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
-        goto cleanup;
-    }
-
-    // z(LE) -> z(BE) -> z
-    reverse_bytes( shared_key.p, shared_key.p + shared_key.len );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( z, shared_key.p, shared_key.len ) );
-
-cleanup:
-    mbedtls_x25519_shared_key_free(&shared_key);
-    mbedtls_x25519_private_key_free(&private_key);
-    mbedtls_x25519_public_key_free(&public_key);
-    return( ret );
-}
-#endif /* MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED */
-
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-/*
- * Compute shared secret on the Ed25519 curve
- */
-static int mbedtls_ecdh_compute_shared_ed25519( mbedtls_ecp_group *grp, mbedtls_mpi *z,
-        const mbedtls_ecp_point *Q, const mbedtls_mpi *d,
-        int (*f_rng)(void *, unsigned char *, size_t),
-        void *p_rng )
-{
-    int ret;
-    mbedtls_x25519_shared_key_t shared_key;
-    mbedtls_x25519_public_key_t public_key;
-    mbedtls_x25519_secret_key_t secret_key;
-
-    (void) f_rng;
-    (void) p_rng;
-
-    if( grp->id != MBEDTLS_ECP_DP_ED25519 )
-        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
-
-    mbedtls_x25519_shared_key_init(&shared_key);
-    mbedtls_x25519_secret_key_init(&secret_key);
-    mbedtls_x25519_public_key_init(&public_key);
-
-    // Q -> Q(BE) -> Q(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->Y, public_key.p, public_key.len ) );
-    reverse_bytes( public_key.p, public_key.p + public_key.len );
-
-    // d -> d(BE) -> d(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, secret_key.p, secret_key.len ) );
-    reverse_bytes( secret_key.p, secret_key.p + secret_key.len );
-
-    // compute shared secret
-    if( mbedtls_x25519_edwards_key_exchange( &shared_key, &public_key, &secret_key ) )
-    {
-        ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
-        goto cleanup;
-    }
-
-    // z(LE) -> z(BE) -> z
-    reverse_bytes( shared_key.p, shared_key.p + shared_key.len );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( z, shared_key.p, shared_key.len ) );
-
-    cleanup:
-    mbedtls_x25519_shared_key_free(&shared_key);
-    mbedtls_x25519_secret_key_free(&secret_key);
-    mbedtls_x25519_public_key_free(&public_key);
-    return( ret );
-}
-#endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
-
 /*
  * Generate public key: simple wrapper around mbedtls_ecp_gen_keypair
  */
@@ -172,7 +47,6 @@ int mbedtls_ecdh_gen_public( mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp
 {
     return mbedtls_ecp_gen_keypair( grp, d, Q, f_rng, p_rng );
 }
-
 
 /*
  * Compute shared secret (SEC1 3.3.1)
@@ -184,22 +58,6 @@ int mbedtls_ecdh_compute_shared( mbedtls_ecp_group *grp, mbedtls_mpi *z,
 {
     int ret;
     mbedtls_ecp_point P;
-
-    if( grp == NULL )
-        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
-
-#if defined(MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED)
-    /*
-     * Use custom optimization
-     */
-    if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
-        return mbedtls_ecdh_compute_shared_curve25519(grp, z, Q, d, f_rng, p_rng);
-#endif /* MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED */
-
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-    if( grp->id == MBEDTLS_ECP_DP_ED25519 )
-        return mbedtls_ecdh_compute_shared_ed25519(grp, z, Q, d, f_rng, p_rng);
-#endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
 
     mbedtls_ecp_point_init( &P );
 

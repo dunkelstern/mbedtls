@@ -426,7 +426,6 @@
 #define MBEDTLS_ECP_DP_BP384R1_ENABLED
 #define MBEDTLS_ECP_DP_BP512R1_ENABLED
 #define MBEDTLS_ECP_DP_CURVE25519_ENABLED
-#define MBEDTLS_ECP_DP_ED25519_ENABLED
 
 /**
  * \def MBEDTLS_ECP_NIST_OPTIM
@@ -713,45 +712,6 @@
  *      MBEDTLS_TLS_ECJPAKE_WITH_AES_128_CCM_8
  */
 //#define MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
-
-/**
- * \def MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED
- *
- * Use Ed25519 library for key pair generation for Curve25519
- *
- * \warning This is currently experimental, so this is disabled by default.
- *
- * Requires: MBEDTLS_X25519_C
- *           MBEDTLS_ECP_C
- *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
- */
-// #define MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED
-
-/**
- * \def MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED
- *
- * Use Ed25519 library in ECDH algorithm for Curve25519
- *
- * \warning This is currently experimental, so this is disabled by default.
- *
- * Requires: MBEDTLS_X25519_C
- *           MBEDTLS_ECDH_C
- *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
- */
-// #define MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED
-
-/**
- * \def MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED
- *
- * Use Ed25519 library in ECDSA algorithm for Curve25519
- *
- * \warning This is currently experimental, so this is disabled by default.
- *
- * Requires: MBEDTLS_X25519_C
- *           MBEDTLS_ECDSA_C
- *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
- */
-// #define MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED
 
 /**
  * \def MBEDTLS_PK_PARSE_EC_EXTENDED
@@ -2497,21 +2457,30 @@
 #define MBEDTLS_XTEA_C
 
 /**
- * \def MBEDTLS_X25519_C
+ * \def MBEDTLS_ED25519_C
  *
- * Use Ed25519 library for Curve25519 operations such ECDSA, ECDH and optimized key pair generation.
+ * Use 3hd party library Ed25519.
  *
  * \warning This is currently experimental, so this is disabled by default.
  *
  * Module:  library/ed25519/.c
  *
- * Requires: MBEDTLS_ECP_DP_CURVE25519_ENABLED
- *
- * Caller: library/ecp.c
- *         library/ecdh.c
- *         library/ecdsa.c
+ * Caller: library/fast_ec.c
  */
-#define MBEDTLS_X25519_C
+#define MBEDTLS_ED25519_C
+
+/**
+ * \def MBEDTLS_FAST_EC_C
+ *
+ * Use Fast Elliptic Curve algorithms, such as X25519 for DH and Ed25519 for DSA.
+ *
+ * Module library/fast_ec.c
+ *
+ * Requires: MBEDTLS_ED25519_C
+ *
+ * Caller: library/pk_wrap.c
+ */
+#define MBEDTLS_FAST_EC_C
 
 /* \} name SECTION: mbed TLS modules */
 

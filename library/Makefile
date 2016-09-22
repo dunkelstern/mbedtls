@@ -34,7 +34,7 @@ endif
 SOEXT_TLS=so.10
 SOEXT_X509=so.0
 SOEXT_CRYPTO=so.0
-SOEXT_X25519=so.0
+SOEXT_ED25519=so.0
 
 DLEXT=so
 # OSX shared library extension:
@@ -65,7 +65,8 @@ OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
 		timing.o	version.o			\
 		version_features.o		xtea.o	\
 		kdf.o kdf1.o kdf2.o kdf_wrap.o	\
-		ecies.o	ecies_envelope.o x25519.o
+		fast_ec.o	fast_ec_wrap.o	\
+		ecies.o	ecies_wrap.o	ecies_envelope.o
 
 OBJS_X509=	certs.o		pkcs11.o	x509.o		\
 		x509_create.o	x509_crl.o	x509_crt.o	\
@@ -76,26 +77,28 @@ OBJS_TLS=	debug.o		net.o		ssl_cache.o	\
 		ssl_cookie.o	ssl_srv.o	ssl_ticket.o	\
 		ssl_tls.o
 
-ifeq ($(USE_X25519_AMD64_RADIX_64_24K_OPTIMIZATION),1)
-	OBJS_X25519_IMPL_DIR := ed25519_amd64_64_24k
+ifeq ($(USE_ED25519_AMD64_RADIX_64_24K_OPTIMIZATION),1)
+	OBJS_ED25519_IMPL_DIR := amd64_64_24k
 endif
 
-ifeq ($(USE_X25519_AMD64_RADIX_51_30K_OPTIMIZATION),1)
-	OBJS_X25519_IMPL_DIR := ed25519_amd64_51_30k
+ifeq ($(USE_ED25519_AMD64_RADIX_51_30K_OPTIMIZATION),1)
+	OBJS_ED25519_IMPL_DIR := amd64_51_30k
 endif
 
-ifeq ($(OBJS_X25519_IMPL_DIR),)
-	OBJS_X25519_IMPL_DIR := ed25519_ref10
+ifeq ($(OBJS_ED25519_IMPL_DIR),)
+	OBJS_ED25519_IMPL_DIR := ref10
 endif
 
 ifndef WINDOWS
-	OBJS_X25519_C := $(patsubst %.c,%.o,$(wildcard $(OBJS_X25519_IMPL_DIR)/*.c))
-	OBJS_X25519_S := $(patsubst %.s,%.o,$(wildcard $(OBJS_X25519_IMPL_DIR)/*.s))
+	OBJS_ED25519_COMMON_C := $(patsubst %.c,%.o,$(wildcard ed25519/common/*.c))
+	OBJS_ED25519_IMPL_C := $(patsubst %.c,%.o,$(wildcard ed25519/$(OBJS_ED25519_IMPL_DIR)/*.c))
+	OBJS_ED25519_IMPL_S := $(patsubst %.s,%.o,$(wildcard ed25519/$(OBJS_ED25519_IMPL_DIR)/*.s))
 else
-	OBJS_X25519_C := $(patsubst %.c,%.o,$(wildcard $(OBJS_X25519_IMPL_DIR)\\*.c))
-	OBJS_X25519_S := $(patsubst %.s,%.o,$(wildcard $(OBJS_X25519_IMPL_DIR)\\*.s))
+	OBJS_ED25519_COMMON_C := $(patsubst %.c,%.o,$(wildcard ed25519\\common\\*.c))
+	OBJS_ED25519_IMPL_C := $(patsubst %.c,%.o,$(wildcard ed25519\\$(OBJS_ED25519_IMPL_DIR)\\*.c))
+	OBJS_ED25519_IMPL_S := $(patsubst %.s,%.o,$(wildcard ed25519\\$(OBJS_ED25519_IMPL_DIR)\\*.s))
 endif
-OBJS_X25519 := $(OBJS_X25519_C) $(OBJS_X25519_S)
+OBJS_ED25519 := $(OBJS_ED25519_COMMON_C) $(OBJS_ED25519_IMPL_C) $(OBJS_ED25519_IMPL_S)
 
 .SILENT:
 
@@ -107,9 +110,9 @@ else
 all: shared static
 endif
 
-static: libmbedcrypto.a libmbedx509.a libmbedtls.a libx25519.a
+static: libmbedcrypto.a libmbedx509.a libmbedtls.a libed25519.a
 
-shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT) libx25519.$(DLEXT)
+shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT) libed25519.$(DLEXT)
 
 # tls
 libmbedtls.a: $(OBJS_TLS)
@@ -180,28 +183,28 @@ libmbedcrypto.dll: $(OBJS_CRYPTO)
 	echo "  LD    $@"
 	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS_CRYPTO) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
 
-# x25519
-libx25519.a: $(OBJS_X25519)
+# ed25519
+libed25519.a: $(OBJS_ED25519)
 	echo "  AR    $@"
-	$(AR) rc $@ $(OBJS_X25519)
+	$(AR) rc $@ $(OBJS_ED25519)
 	echo "  RL    $@"
 	$(AR) s $@
 
-libx25519.$(SOEXT_X25519): $(OBJS_X25519)
+libed25519.$(SOEXT_ED25519): $(OBJS_ED25519)
 	echo "  LD    $@"
-	$(CC) -shared -Wl,-soname,$@ $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS_X25519)
+	$(CC) -shared -Wl,-soname,$@ $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS_ED25519)
 
-libx25519.so: libx25519.$(SOEXT_X25519)
+libed25519.so: libed25519.$(SOEXT_ED25519)
 	echo "  LN    $@ -> $<"
 	ln -sf $< $@
 
-libx25519.dylib: $(OBJS_X25519)
+libed25519.dylib: $(OBJS_ED25519)
 	echo "  LD    $@"
-	$(CC) -dynamiclib $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS_X25519)
+	$(CC) -dynamiclib $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS_ED25519)
 
-libx25519.dll: $(OBJS_X25519)
+libed25519.dll: $(OBJS_ED25519)
 	echo "  LD    $@"
-	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS_X25519) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
+	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS_ED25519) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
 
 %.o : %.c
 	echo "  CC    $<"
@@ -214,7 +217,7 @@ libx25519.dll: $(OBJS_X25519)
 clean:
 ifndef WINDOWS
 	find . -type f -name '*.o' -exec rm {} +
-	rm -f *libmbed* libx25519*
+	rm -f *libmbed* libed25519*
 else
-	del /Q /F /S *.o libmbed* libx25519*
+	del /Q /F /S *.o libmbed* libed25519*
 endif

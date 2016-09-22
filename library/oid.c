@@ -409,6 +409,14 @@ static const oid_pk_alg_t oid_pk_alg[] =
         MBEDTLS_PK_ECKEY_DH,
     },
     {
+        { ADD_LEN( MBEDTLS_OID_X25519 ),        "id-X25519",        "Curve25519 key" },
+        MBEDTLS_PK_X25519,
+    },
+    {
+        { ADD_LEN( MBEDTLS_OID_ED25519 ),       "id-Ed25519",       "Ed25519 key" },
+        MBEDTLS_PK_ED25519,
+    },
+    {
         { NULL, 0, NULL, NULL },
         MBEDTLS_PK_NONE,
     },
@@ -472,14 +480,6 @@ static const oid_ecp_grp_t oid_ecp_grp[] =
     {
         { ADD_LEN( MBEDTLS_OID_EC_GRP_BP512R1 ),   "brainpoolP512r1","brainpool512r1" },
         MBEDTLS_ECP_DP_BP512R1,
-    },
-    {
-        { ADD_LEN( MBEDTLS_OID_EC_GRP_CURVE25519 ),   "curve25519","curve25519" },
-        MBEDTLS_ECP_DP_CURVE25519,
-    },
-    {
-        { ADD_LEN( MBEDTLS_OID_EC_GRP_ED25519 ),   "ed25519","ed25519" },
-        MBEDTLS_ECP_DP_ED25519,
     },
     {
         { NULL, 0, NULL, NULL },

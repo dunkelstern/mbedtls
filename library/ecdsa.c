@@ -42,10 +42,6 @@
 #include "mbedtls/hmac_drbg.h"
 #endif
 
-#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-#include "mbedtls/x25519.h"
-#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED*/
-
 /*
  * Derive a suitable integer for group grp from a buffer of length len
  * SEC1 4.1.3 step 5 aka SEC1 4.1.4 step 3
@@ -69,183 +65,6 @@ cleanup:
     return( ret );
 }
 
-
-#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED) || defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-
-/*
- * Swap given bytes
- */
-static void swap(unsigned char *a, unsigned char *b) {
-    unsigned char t = *a; *a = *b; *b = t;
-}
-/*
- * Reverse bytes in range [first, last)
- */
-static void reverse_bytes(unsigned char *first, unsigned char *last) {
-    while ((first!=last)&&(first!=--last)) {
-        swap (first,last);
-        ++first;
-    }
-}
-
-#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED || MBEDTLS_ECP_DP_ED25519_ENABLED */
-
-#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED)
-/*
- * Compute Ed25519 signature of a given message (http://ed25519.cr.yp.to/ed25519-20110926.pdf)
- * Use Curve25519 keypair as base
- */
-static int mbedtls_ecdsa_sign_curve25519( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
-                const mbedtls_mpi *d, const unsigned char *msg, size_t msg_len,
-                int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
-{
-    int ret;
-    mbedtls_x25519_private_key_t private_key;
-    mbedtls_x25519_signature_t signature;
-
-    if( grp->N.p != NULL )
-        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
-
-    mbedtls_x25519_private_key_init(&private_key);
-    mbedtls_x25519_signature_init(&signature);
-
-    (void) f_rng;
-    (void) p_rng;
-    // d -> d(BE) -> d(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, private_key.p, private_key.len ) );
-    reverse_bytes( private_key.p, private_key.p + private_key.len );
-    // derive sign
-    MBEDTLS_MPI_CHK( mbedtls_x25519_montgomery_sign( &signature, &private_key, msg, msg_len ) );
-    // signature(LE) -> signature(BE)
-    reverse_bytes( signature.p, signature.p + signature .len );
-    // signature(BE) -> (s,r)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( s, signature.s, signature.s_len ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature.r, signature.r_len ) );
-
-cleanup:
-    mbedtls_x25519_private_key_free(&private_key);
-    mbedtls_x25519_signature_free(&signature);
-    return( ret );
-}
-
-/*
- * Verify Ed25519 signature of a given message (http://ed25519.cr.yp.to/ed25519-20110926.pdf)
- * Use Curve25519 keypair as base
- */
-static int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
-                  const unsigned char *msg, size_t msg_len,
-                  const mbedtls_ecp_point *Q, const mbedtls_mpi *r, const mbedtls_mpi *s)
-{
-    int ret;
-    mbedtls_x25519_public_key_t public_key;
-    mbedtls_x25519_signature_t signature;
-
-    if( grp->N.p != NULL )
-        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
-
-    mbedtls_x25519_public_key_init(&public_key);
-    mbedtls_x25519_signature_init(&signature);
-
-    // Q -> Q(BE) -> Q(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->X, public_key.p, public_key.len ) );
-    reverse_bytes( public_key.p, public_key.p + public_key.len );
-    // (s, r) -> (s, r)(BE) -> (r, s)(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( s, signature.s, signature.s_len ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( r, signature.r, signature.r_len ) );
-    reverse_bytes( signature.p, signature.p + signature.len );
-
-    // verify sign
-    if ( mbedtls_x25519_montgomery_verify( &signature, &public_key, msg, msg_len ) != 0 )
-    {
-        ret = MBEDTLS_ERR_ECP_VERIFY_FAILED;
-        goto cleanup;
-    }
-
-cleanup:
-    mbedtls_x25519_public_key_free(&public_key);
-    mbedtls_x25519_signature_free(&signature);
-    return( ret );
-}
-#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED */
-
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-/*
- * Compute Ed25519 signature of a given message (http://ed25519.cr.yp.to/ed25519-20110926.pdf)
- * Use Ed25519 keypair as base
- */
-static int mbedtls_ecdsa_sign_ed25519( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
-                const mbedtls_mpi *d, const unsigned char *msg, size_t msg_len,
-                int (*f_rng)(void *, unsigned char *, size_t), void *p_rng )
-{
-    int ret;
-    mbedtls_x25519_secret_key_t secret_key;
-    mbedtls_x25519_signature_t signature;
-
-    if( grp->N.p != NULL )
-        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
-
-    mbedtls_x25519_secret_key_init(&secret_key);
-    mbedtls_x25519_signature_init(&signature);
-
-    (void) f_rng;
-    (void) p_rng;
-    // d -> d(BE) -> d(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( d, secret_key.p, secret_key.len ) );
-    reverse_bytes( secret_key.p, secret_key.p + secret_key.len );
-    // derive sign
-    MBEDTLS_MPI_CHK(mbedtls_x25519_edwards_sign(&signature, &secret_key, msg, msg_len) );
-    // signature(LE) -> signature(BE)
-    reverse_bytes( signature.p, signature.p + signature.len );
-    // signature(BE) -> (s,r)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( s, signature.s, signature.s_len ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature.r, signature.r_len ) );
-
-cleanup:
-    mbedtls_x25519_secret_key_free(&secret_key);
-    mbedtls_x25519_signature_free(&signature);
-    return( ret );
-}
-
-/*
- * Verify Ed25519 signature of a given message (http://ed25519.cr.yp.to/ed25519-20110926.pdf)
- * Use Ed25519 keypair as base
- */
-static int mbedtls_ecdsa_verify_ed25519( mbedtls_ecp_group *grp,
-                  const unsigned char *msg, size_t msg_len,
-                  const mbedtls_ecp_point *Q, const mbedtls_mpi *r, const mbedtls_mpi *s)
-{
-    int ret;
-    mbedtls_x25519_public_key_t public_key;
-    mbedtls_x25519_signature_t signature;
-
-    if( grp->N.p != NULL )
-        return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
-
-    mbedtls_x25519_public_key_init(&public_key);
-    mbedtls_x25519_signature_init(&signature);
-
-    // Q -> Q(BE) -> Q(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->Y, public_key.p, public_key.len ) );
-    reverse_bytes( public_key.p, public_key.p + public_key.len );
-    // (r, s) -> (r, s)(BE) -> (s, r)(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( s, signature.s, signature.s_len ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( r, signature.r, signature.r_len ) );
-    reverse_bytes( signature.p, signature.p + signature.len );
-
-    // verify sign
-    if (mbedtls_x25519_edwards_verify(&signature, &public_key, msg, msg_len) != 0 )
-    {
-        ret = MBEDTLS_ERR_ECP_VERIFY_FAILED;
-        goto cleanup;
-    }
-
-cleanup:
-    mbedtls_x25519_public_key_free(&public_key);
-    mbedtls_x25519_signature_free(&signature);
-    return( ret );
-}
-#endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
-
 /*
  * Compute ECDSA signature of a hashed message (SEC1 4.1.3)
  * Obviously, compared to SEC1 4.1.3, we skip step 4 (hash message)
@@ -257,17 +76,6 @@ int mbedtls_ecdsa_sign( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
     int ret, key_tries, sign_tries, blind_tries;
     mbedtls_ecp_point R;
     mbedtls_mpi k, e, t;
-
-#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED)
-    /* Use EdDSA on curve Curve25519 */
-    if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
-        return mbedtls_ecdsa_sign_curve25519( grp, r, s, d, buf, blen, f_rng, p_rng );
-#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED */
-
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-    if( grp->id == MBEDTLS_ECP_DP_ED25519 )
-        return mbedtls_ecdsa_sign_ed25519( grp, r, s, d, buf, blen, f_rng, p_rng );
-#endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
 
     /* Fail cleanly on curves such as Curve25519 that can't be used for ECDSA */
     if( grp->N.p == NULL )
@@ -399,21 +207,9 @@ int mbedtls_ecdsa_verify( mbedtls_ecp_group *grp,
     mbedtls_ecp_point_init( &R );
     mbedtls_mpi_init( &e ); mbedtls_mpi_init( &s_inv ); mbedtls_mpi_init( &u1 ); mbedtls_mpi_init( &u2 );
 
-#if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED)
-    /* Use EdDSA on curve Curve25519 */
-    if( grp->id == MBEDTLS_ECP_DP_CURVE25519 )
-        return mbedtls_ecdsa_verify_curve25519( grp, buf, blen, Q, r, s );
-#endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED */
-
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-    if( grp->id == MBEDTLS_ECP_DP_ED25519 )
-        return mbedtls_ecdsa_verify_ed25519( grp, buf, blen, Q, r, s );
-#endif /* MBEDTLS_ECP_DP_ED25519_ENABLED */
-
     /* Fail cleanly on curves such as Curve25519 that can't be used for ECDSA */
     if( grp->N.p == NULL )
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
-
 
     /*
      * Step 1: make sure r and s are in range 1..n-1
