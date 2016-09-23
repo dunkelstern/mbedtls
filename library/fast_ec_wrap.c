@@ -149,11 +149,11 @@ static int ed25519_verify_wrap( const unsigned char* sig, const unsigned char* p
 static int ed25519_compute_shared_func( const unsigned char* public_key, const unsigned char* private_key,
                                 unsigned char* shared, size_t shared_len )
 {
-    if( public_key == NULL || private_key == NULL || shared == NULL || shared_len < MBEDTLS_ED25519_DH_LEN)
-        return( MBEDTLS_ERR_FAST_EC_BAD_INPUT_DATA );
-
     unsigned char x25519_public_key[MBEDTLS_ED25519_KEY_LEN];
     unsigned char x25519_private_key[MBEDTLS_ED25519_KEY_LEN];
+
+    if( public_key == NULL || private_key == NULL || shared == NULL || shared_len < MBEDTLS_ED25519_DH_LEN)
+        return( MBEDTLS_ERR_FAST_EC_BAD_INPUT_DATA );
 
     mbedtls_ed25519_pubkey_to_curve25519(x25519_public_key, public_key);
     mbedtls_ed25519_key_to_curve25519(x25519_private_key, private_key);
