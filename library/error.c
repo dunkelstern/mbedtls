@@ -268,6 +268,8 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
             mbedtls_snprintf( buf, buflen, "FAST_EC - The selected feature is not available" );
         if( use_ret == -(MBEDTLS_ERR_FAST_EC_PUB_PRV_MISMATCH) )
             mbedtls_snprintf( buf, buflen, "FAST_EC - Public key is not match private key" );
+        if( use_ret == -(MBEDTLS_ERR_FAST_EC_SHARED_WEAK_KEY) )
+            mbedtls_snprintf( buf, buflen, "FAST_EC - Key contains point of small order" );
 #endif /* MBEDTLS_FAST_EC_C */
 
 #if defined(MBEDTLS_KDF_C)

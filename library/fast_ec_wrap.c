@@ -89,7 +89,8 @@ static int x25519_compute_shared_func( const unsigned char* public_key, const un
     if( public_key == NULL || private_key == NULL || shared == NULL || shared_len < MBEDTLS_ED25519_DH_LEN)
         return( MBEDTLS_ERR_FAST_EC_BAD_INPUT_DATA );
 
-    mbedtls_curve25519_key_exchange( shared, public_key, private_key );
+    if( mbedtls_curve25519_key_exchange( shared, public_key, private_key ) != 0 )
+        return( MBEDTLS_ERR_FAST_EC_SHARED_WEAK_KEY );
 
     return( 0 );
 }
@@ -158,7 +159,8 @@ static int ed25519_compute_shared_func( const unsigned char* public_key, const u
     mbedtls_ed25519_pubkey_to_curve25519(x25519_public_key, public_key);
     mbedtls_ed25519_key_to_curve25519(x25519_private_key, private_key);
 
-    mbedtls_curve25519_key_exchange( shared, x25519_public_key, x25519_private_key );
+    if( mbedtls_curve25519_key_exchange( shared, x25519_public_key, x25519_private_key ) != 0 )
+        return( MBEDTLS_ERR_FAST_EC_SHARED_WEAK_KEY );
 
     return( 0 );
 }

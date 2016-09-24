@@ -393,5 +393,6 @@ int mbedtls_curve25519_key_exchange(
     fe25519_pack(shared_secret, &x2);
 
     mbedtls_ed25519_zeroize(e, sizeof(e));
-    return 0;
+    /* The all-zero output results when the input is a point of small order. */
+    return fe25519_iszero_vartime(&x2) ? (-1) : (0);
 }

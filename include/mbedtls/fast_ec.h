@@ -50,6 +50,7 @@
 #define MBEDTLS_ERR_FAST_EC_SIG_LEN_MISMATCH         -0x4800  /**< The signature length mismatch. */
 #define MBEDTLS_ERR_FAST_EC_FEATURE_UNAVAILABLE      -0x4780  /**< The selected feature is not available. */
 #define MBEDTLS_ERR_FAST_EC_PUB_PRV_MISMATCH         -0x4700  /**< Public key is not match private key. */
+#define MBEDTLS_ERR_FAST_EC_SHARED_WEAK_KEY          -0x4680  /**< Key contains point of small order. */
 
 #ifdef __cplusplus
 extern "C" {

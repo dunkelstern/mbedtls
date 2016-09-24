@@ -325,5 +325,6 @@ int mbedtls_curve25519_key_exchange(
 
     mbedtls_ed25519_zeroize(e, sizeof(e));
 
-    return 0;
+    /* The all-zero output results when the input is a point of small order. */
+    return fe_isnonzero(x2) ? (0) : (-1);
 }
