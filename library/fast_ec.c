@@ -150,6 +150,14 @@ int mbedtls_fast_ec_gen_key( mbedtls_fast_ec_keypair_t *keypair,
     return keypair->info->gen_key_func( keypair->public_key, keypair->private_key, f_rng, p_rng );
 }
 
+int mbedtls_fast_ec_compute_pub( mbedtls_fast_ec_keypair_t *keypair )
+{
+    if( keypair == NULL || keypair->info == NULL )
+        return( MBEDTLS_ERR_FAST_EC_BAD_INPUT_DATA );
+
+    return( keypair->info->get_pub_func( keypair->public_key, keypair->private_key ) );
+}
+
 int mbedtls_fast_ec_sign( const mbedtls_fast_ec_keypair_t* keypair,
                 unsigned char* sig, size_t *sig_len,
                 const unsigned char* data, size_t data_len )

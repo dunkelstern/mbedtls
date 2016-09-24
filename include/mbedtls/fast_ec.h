@@ -127,6 +127,17 @@ int mbedtls_fast_ec_setup( mbedtls_fast_ec_keypair_t *keypair, const mbedtls_fas
 int mbedtls_fast_ec_gen_key( mbedtls_fast_ec_keypair_t *keypair,
                 int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
 
+
+/**
+ * \brief           Compute public key based on the private key in context
+ *
+ * \param keypair   Keypair structure holding at least private key
+ *
+ * \return          0 if successful (keys are valid and match), or
+ *                  MBEDTLS_ERR_FAST_EC_BAD_INPUT_DATA.
+ */
+int mbedtls_fast_ec_compute_pub( mbedtls_fast_ec_keypair_t *keypair );
+
 /**
  * \brief           Compute EdDSA signature of a given message
  *

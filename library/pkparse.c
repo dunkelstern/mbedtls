@@ -586,7 +586,8 @@ static int pk_get_fast_ec_key( unsigned char **p,
 
     memcpy( fast_ec->private_key, *p, mbedtls_fast_ec_get_key_len( fast_ec->info ) );
     *p += mbedtls_fast_ec_get_key_len( fast_ec->info );
-    return ( 0 );
+
+    return( mbedtls_fast_ec_compute_pub( fast_ec ) );
 }
 
 #endif /* MBEDTLS_FAST_EC_C */
