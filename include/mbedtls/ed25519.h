@@ -97,7 +97,7 @@ int mbedtls_ed25519_get_pubkey(
 int mbedtls_ed25519_sign(
         unsigned char signature[MBEDTLS_ED25519_SIG_LEN],
         const unsigned char secret_key[MBEDTLS_ED25519_KEY_LEN],
-        const unsigned char* msg, const unsigned long msg_len);
+        const unsigned char* msg, size_t msg_len);
 
 
 /**
@@ -114,7 +114,7 @@ int mbedtls_ed25519_sign(
 int mbedtls_ed25519_verify(
         const unsigned char signature[MBEDTLS_ED25519_SIG_LEN],
         const unsigned char public_key[MBEDTLS_ED25519_KEY_LEN],
-        const unsigned char* msg, const unsigned long msg_len);
+        const unsigned char* msg, size_t msg_len);
 
 /**
  * @brief Convert Ed25519 public key to the birationally equivalent Curve25519 public key.
