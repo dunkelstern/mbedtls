@@ -540,7 +540,13 @@ const mbedtls_pk_info_t mbedtls_rsa_alt_info = {
 
 #if defined(MBEDTLS_FAST_EC_C)
 
-static int fast_ec_can_do( mbedtls_pk_type_t type )
+static int fast_ec_x25519_can_do( mbedtls_pk_type_t type )
+{
+
+    return( type == MBEDTLS_PK_X25519 );
+}
+
+static int fast_ec_ed25519_can_do( mbedtls_pk_type_t type )
 {
 
     return( type == MBEDTLS_PK_X25519 || type == MBEDTLS_PK_ED25519 );
@@ -628,7 +634,7 @@ const mbedtls_pk_info_t mbedtls_x25519_info = {
     MBEDTLS_PK_X25519,
     "X25519",
     fast_ec_get_bitlen,
-    fast_ec_can_do,
+    fast_ec_x25519_can_do,
     NULL, // verify
     NULL, // sign
     fast_ec_decrypt_wrap,
@@ -643,7 +649,7 @@ const mbedtls_pk_info_t mbedtls_ed25519_info = {
     MBEDTLS_PK_ED25519,
     "ED25519",
     fast_ec_get_bitlen,
-    fast_ec_can_do,
+    fast_ec_ed25519_can_do,
     fast_ec_verify_wrap,
     fast_ec_sign_wrap,
     fast_ec_decrypt_wrap,
