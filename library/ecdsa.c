@@ -92,8 +92,6 @@ static void reverse_bytes(unsigned char *first, unsigned char *last) {
 
 #if defined(MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED)
 
-#define MBEDTLS_ED25519_SIG_HALF_LEN ( MBEDTLS_ED25519_SIG_LEN >> 1 )
-
 /*
  * Compute Ed25519 signature of a given message (http://ed25519.cr.yp.to/ed25519-20110926.pdf)
  * Use Curve25519 keypair as base
@@ -119,8 +117,8 @@ static int mbedtls_ecdsa_sign_curve25519( mbedtls_ecp_group *grp, mbedtls_mpi *r
     // signature(LE) -> signature(BE)
     reverse_bytes( signature, signature + MBEDTLS_ED25519_SIG_LEN );
     // signature(BE) -> (s,r)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( s, signature, MBEDTLS_ED25519_SIG_HALF_LEN ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature + MBEDTLS_ED25519_SIG_HALF_LEN, MBEDTLS_ED25519_SIG_HALF_LEN ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( s, signature, ( MBEDTLS_ED25519_SIG_LEN >> 1 ) ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_read_binary( r, signature + ( MBEDTLS_ED25519_SIG_LEN >> 1 ), ( MBEDTLS_ED25519_SIG_LEN >> 1 ) ) );
 
 cleanup:
     return( ret );
@@ -145,8 +143,8 @@ static int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
     MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( &Q->X, public_key, MBEDTLS_ED25519_KEY_LEN ) );
     reverse_bytes( public_key, public_key + MBEDTLS_ED25519_KEY_LEN );
     // (s, r) -> (s, r)(BE) -> (r, s)(LE)
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( s, signature, MBEDTLS_ED25519_SIG_HALF_LEN ) );
-    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( r, signature + MBEDTLS_ED25519_SIG_HALF_LEN, MBEDTLS_ED25519_SIG_HALF_LEN ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( s, signature, ( MBEDTLS_ED25519_SIG_LEN >> 1 ) ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_write_binary( r, signature + ( MBEDTLS_ED25519_SIG_LEN >> 1 ), ( MBEDTLS_ED25519_SIG_LEN >> 1 ) ) );
     reverse_bytes( signature, signature + MBEDTLS_ED25519_SIG_LEN );
 
     // verify sign
@@ -159,8 +157,6 @@ static int mbedtls_ecdsa_verify_curve25519( mbedtls_ecp_group *grp,
 cleanup:
     return( ret );
 }
-
-#undef MBEDTLS_ED25519_SIG_HALF_LEN
 
 #endif /* MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED */
 

@@ -549,10 +549,6 @@
 #error "MBEDTLS_FAST_EC_C defined, but not all prerequisites"
 #endif
 
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED) && !defined(MBEDTLS_ED25519_C)
-#error "MBEDTLS_ECP_DP_ED25519_ENABLED defined, but not all prerequisites"
-#endif
-
 #if defined(MBEDTLS_ED25519_C) && !defined(MBEDTLS_ECP_C)
 #error "MBEDTLS_ED25519_C defined, but not all prerequisites"
 #endif
