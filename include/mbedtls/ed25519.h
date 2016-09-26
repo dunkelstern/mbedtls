@@ -74,6 +74,39 @@ int mbedtls_curve25519_key_exchange(
         const unsigned char secret_key[MBEDTLS_ED25519_KEY_LEN]);
 
 /**
+ * @brief Create signature based on the Curve25519 montgomery curve
+ *
+ * Use ESDSA to derive signature
+ *
+ * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
+ * @param secret_key - Curve25519 secret key (unsigned binary data, low endian, 32 byte)
+ * @param msg - message to be signed
+ * @param msg_len - message length
+ * @return 0 on success
+ */
+int mbedtls_curve25519_sign(
+        unsigned char signature[MBEDTLS_ED25519_SIG_LEN],
+        const unsigned char secret_key[MBEDTLS_ED25519_KEY_LEN],
+        const unsigned char* msg, size_t msg_len);
+
+
+/**
+ * @brief Verify signature based on the Curve25519 montgomery curve
+ *
+ * Use ESDSA to verify signature
+ *
+ * @param signature - derived signature (unsigned binary data, low endian, 64 byte)
+ * @param public_key - Curve25519 public key (unsigned binary data, low endian, 32 byte)
+ * @param msg - message to be verified
+ * @param msg_len - message length
+ * @return 0 on success
+ */
+int mbedtls_curve25519_verify(
+        const unsigned char signature[MBEDTLS_ED25519_SIG_LEN],
+        const unsigned char public_key[MBEDTLS_ED25519_KEY_LEN],
+        const unsigned char* msg, size_t msg_len);
+
+/**
  * @brief Derive public key from the private key.
  *
  * @param public_key - Ed25519 public key (unsigned binary data, low endian, 32 byte)

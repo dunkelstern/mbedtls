@@ -386,3 +386,119 @@ int mbedtls_curve25519_key_exchange(
     /* The all-zero output results when the input is a point of small order. */
     return fe25519_iszero_vartime(&x2) ? (-1) : (0);
 }
+
+//////////////////////////////////////////////////////////////////
+
+/*
+ * edwardsY = (montgomeryX - 1)*inverse(montgomeryX + 1) mod p
+ */
+static int mbedtls_x25519_ext_montgomery_to_edwards_pubkey(
+        unsigned char ed_public_key[32], const unsigned char curve_public_key[32]) {
+
+    fe25519 mont_x, mont_x_minus_one, mont_x_plus_one, inv_mont_x_plus_one, one, ed_y;
+
+    fe25519_unpack(&mont_x, curve_public_key);
+    fe25519_setint(&one, 1);
+    fe25519_sub(&mont_x_minus_one, &mont_x, &one);
+    fe25519_add(&mont_x_plus_one, &mont_x, &one);
+    fe25519_invert(&inv_mont_x_plus_one, &mont_x_plus_one);
+    fe25519_mul(&ed_y, &mont_x_minus_one, &inv_mont_x_plus_one);
+    fe25519_pack(ed_public_key, &ed_y);
+
+    return 0;
+}
+
+static int mbedtls_ed25519_sign_az(
+        unsigned char signature[64],
+        const unsigned char az[64],
+        const unsigned char* msg, size_t msg_len) {
+
+    mbedtls_ed25519_sha512_context hash;
+    unsigned char hram[64];
+    unsigned char nonce[64];
+    unsigned char public_key[32];
+    sc25519 sck, scs, scsk;
+    ge25519 R, gepk;
+
+    sc25519_from32bytes(&scsk, az);
+    ge25519_scalarmult_base(&gepk, &scsk);
+    ge25519_pack(public_key, &gepk);
+
+    mbedtls_ed25519_sha512_starts(&hash, 0);
+    mbedtls_ed25519_sha512_update(&hash, az + 32, 32);
+    mbedtls_ed25519_sha512_update(&hash, msg, msg_len);
+    mbedtls_ed25519_sha512_finish(&hash, nonce);
+
+    sc25519_from64bytes(&sck, nonce);
+    ge25519_scalarmult_base(&R, &sck);
+    ge25519_pack(signature, &R);
+
+    memmove(signature + 32, public_key, 32);
+
+    mbedtls_ed25519_sha512_starts(&hash, 0);
+    mbedtls_ed25519_sha512_update(&hash, signature, 64);
+    mbedtls_ed25519_sha512_update(&hash, msg, msg_len);
+    mbedtls_ed25519_sha512_finish(&hash, hram);
+
+    sc25519_from64bytes(&scs, hram);
+    sc25519_mul(&scs, &scs, &scsk);
+    sc25519_add(&scs, &scs, &sck);
+
+    sc25519_to32bytes(signature + 32, &scs);
+
+    mbedtls_ed25519_zeroize(nonce, sizeof(nonce));
+    mbedtls_ed25519_sha512_free(&hash);
+
+    return 0;
+}
+
+int mbedtls_curve25519_sign(
+        unsigned char signature[64],
+        const unsigned char secret_key[32],
+        const unsigned char* msg, size_t msg_len)
+{
+
+    unsigned char ed_public_key[32];
+
+    unsigned char az[64];
+    unsigned char sign_bit = 0;
+    ge25519 A;
+    sc25519 scsk;
+
+    mbedtls_ed25519_sha512(secret_key, 32, az, 0);
+    memcpy(az, secret_key, 32);
+
+    sc25519_from32bytes(&scsk, az);
+    ge25519_scalarmult_base(&A, &scsk);
+    ge25519_pack(ed_public_key, &A);
+
+    sign_bit = ed_public_key[31] & (unsigned char) 0x80;
+
+    mbedtls_ed25519_sign_az(signature, az, msg, msg_len);
+
+    signature[63] &= 0x7F;  // bit should be zero already, but just in case
+    signature[63] |= sign_bit;
+
+    mbedtls_ed25519_zeroize(az, sizeof(az));
+    return 0;
+}
+
+
+int mbedtls_curve25519_verify(
+        const unsigned char signature[64],
+        const unsigned char public_key[32],
+        const unsigned char* msg, size_t msg_len)
+{
+    unsigned char ed_public_key[32];
+
+    unsigned char fixed_signarure[64];
+
+    mbedtls_x25519_ext_montgomery_to_edwards_pubkey(ed_public_key, public_key);
+    ed_public_key[31] |= (signature[63] & 0x80);
+
+    memmove(fixed_signarure, signature, 64);
+
+    fixed_signarure[63] &= 0x7F;
+
+    return mbedtls_ed25519_verify(signature, ed_public_key, msg, msg_len);
+}

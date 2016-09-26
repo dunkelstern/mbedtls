@@ -759,27 +759,6 @@ int main( int argc, char *argv[] )
         mbedtls_mpi_free( &z );
 #endif
 
-        /* Ed25519 needs to be handled separately */
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-        mbedtls_ecdh_init( &ecdh );
-        mbedtls_mpi_init( &z );
-
-        if( mbedtls_ecp_group_load( &ecdh.grp, MBEDTLS_ECP_DP_ED25519 ) != 0 ||
-            mbedtls_ecdh_gen_public( &ecdh.grp, &ecdh.d, &ecdh.Qp, myrand, NULL ) != 0 )
-        {
-            mbedtls_exit( 1 );
-        }
-
-        TIME_PUBLIC(  "ECDHE-Ed25519", "handshake",
-                ret |= mbedtls_ecdh_gen_public( &ecdh.grp, &ecdh.d, &ecdh.Q,
-                                        myrand, NULL );
-                ret |= mbedtls_ecdh_compute_shared( &ecdh.grp, &z, &ecdh.Qp, &ecdh.d,
-                                            myrand, NULL ) );
-
-        mbedtls_ecdh_free( &ecdh );
-        mbedtls_mpi_free( &z );
-#endif
-
         for( curve_info = mbedtls_ecp_curve_list();
              curve_info->grp_id != MBEDTLS_ECP_DP_NONE;
              curve_info++ )
@@ -819,27 +798,6 @@ int main( int argc, char *argv[] )
         }
 
         TIME_PUBLIC(  "ECDH-Curve25519", "handshake",
-                ret |= mbedtls_ecdh_compute_shared( &ecdh.grp, &z, &ecdh.Qp, &ecdh.d,
-                                            myrand, NULL ) );
-
-        mbedtls_ecdh_free( &ecdh );
-        mbedtls_mpi_free( &z );
-#endif
-
-        /* Ed25519 needs to be handled separately */
-#if defined(MBEDTLS_ECP_DP_ED25519_ENABLED)
-        mbedtls_ecdh_init( &ecdh );
-        mbedtls_mpi_init( &z );
-
-        if( mbedtls_ecp_group_load( &ecdh.grp, MBEDTLS_ECP_DP_ED25519 ) != 0 ||
-            mbedtls_ecdh_gen_public( &ecdh.grp, &ecdh.d, &ecdh.Qp,
-                             myrand, NULL ) != 0 ||
-            mbedtls_ecdh_gen_public( &ecdh.grp, &ecdh.d, &ecdh.Q, myrand, NULL ) != 0 )
-        {
-            mbedtls_exit( 1 );
-        }
-
-        TIME_PUBLIC(  "ECDH-Ed25519", "handshake",
                 ret |= mbedtls_ecdh_compute_shared( &ecdh.grp, &z, &ecdh.Qp, &ecdh.d,
                                             myrand, NULL ) );
 

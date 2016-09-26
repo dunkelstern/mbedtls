@@ -714,6 +714,45 @@
 //#define MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
 
 /**
+ * \def MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED
+ *
+ * Use Ed25519 library for key pair generation for Curve25519
+ *
+ * \warning This is currently experimental, so this is disabled by default.
+ *
+ * Requires: MBEDTLS_ED25519_C
+ *           MBEDTLS_ECP_C
+ *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
+ */
+ // #define MBEDTLS_ECP_CURVE25519_OVER_ED25519_ENABLED
+
+/**
+ * \def MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED
+ *
+ * Use Ed25519 library in ECDH algorithm for Curve25519
+ *
+ * \warning This is currently experimental, so this is disabled by default.
+ *
+ * Requires: MBEDTLS_ED25519_C
+ *           MBEDTLS_ECDH_C
+ *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
+ */
+ // #define MBEDTLS_ECDH_CURVE25519_OVER_ED25519_ENABLED
+
+/**
+ * \def MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED
+ *
+ * Use Ed25519 library in ECDSA algorithm for Curve25519
+ *
+ * \warning This is currently experimental, so this is disabled by default.
+ *
+ * Requires: MBEDTLS_ED25519_C
+ *           MBEDTLS_ECDSA_C
+ *           MBEDTLS_ECP_DP_CURVE25519_ENABLED
+ */
+ // #define MBEDTLS_ECDSA_CURVE25519_OVER_ED25519_ENABLED
+
+/**
  * \def MBEDTLS_PK_PARSE_EC_EXTENDED
  *
  * Enhance support for reading EC keys using variants of SEC1 not allowed by

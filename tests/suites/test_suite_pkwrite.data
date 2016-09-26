@@ -85,3 +85,11 @@ pk_write_key_check:"data_files/ec_x25519_prv.pem"
 Private key write check FAst EC (draft-ietf-curdle-pkix-01, Ed25519)
 depends_on:MBEDTLS_ED25519_C:MBEDTLS_BASE64_C
 pk_write_key_check:"data_files/ec_ed25519_prv.pem"
+
+Public key write check EC Curve25519 (Experemental)
+depends_on:MBEDTLS_ECP_C:MBEDTLS_BASE64_C:MBEDTLS_ECP_DP_CURVE25519_ENABLED
+pk_write_pubkey_check:"data_files/ec_curve25519_pub.pem"
+
+Private key write check EC Curve25519 (Experemental)
+depends_on:MBEDTLS_ECP_C:MBEDTLS_BASE64_C:MBEDTLS_ECP_DP_CURVE25519_ENABLED
+pk_write_key_check:"data_files/ec_curve25519_prv.pem"
