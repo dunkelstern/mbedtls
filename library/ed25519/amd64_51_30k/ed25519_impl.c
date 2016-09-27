@@ -501,14 +501,14 @@ int mbedtls_curve25519_verify(
 {
     unsigned char ed_public_key[32];
 
-    unsigned char fixed_signarure[64];
+    unsigned char fixed_signature[64];
 
     mbedtls_x25519_ext_montgomery_to_edwards_pubkey(ed_public_key, public_key);
     ed_public_key[31] |= (signature[63] & 0x80);
 
-    memmove(fixed_signarure, signature, 64);
+    memmove(fixed_signature, signature, 64);
 
-    fixed_signarure[63] &= 0x7F;
+    fixed_signature[63] &= 0x7F;
 
-    return mbedtls_ed25519_verify(signature, ed_public_key, msg, msg_len);
+    return mbedtls_ed25519_verify(fixed_signature, ed_public_key, msg, msg_len);
 }
