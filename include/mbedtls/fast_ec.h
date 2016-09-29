@@ -119,6 +119,7 @@ int mbedtls_fast_ec_setup( mbedtls_fast_ec_keypair_t *keypair, const mbedtls_fas
  *                  Generate based on the setup information.
  *                  Should be called after mbedtls_fast_ec_setup().
  *
+ * \param keypair   Destination keypair.
  * \param f_rng     RNG function
  * \param p_rng     RNG parameter
  *

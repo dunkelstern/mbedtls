@@ -1,5 +1,5 @@
 /**
- * \file sha512.h
+ * \file ed25519_sha512.h
  *
  * \brief SHA-384 and SHA-512 cryptographic hash function
  *
@@ -89,6 +89,7 @@ void mbedtls_ed25519_sha512_finish( mbedtls_ed25519_sha512_context *ctx, unsigne
  * \param input    buffer holding the  data
  * \param ilen     length of the input data
  * \param output   SHA-384/512 checksum result
+ * \param is384    0 = use SHA512, 1 = use SHA384
  */
 void mbedtls_ed25519_sha512( const unsigned char *input, size_t ilen,
              unsigned char output[64], int is384 );

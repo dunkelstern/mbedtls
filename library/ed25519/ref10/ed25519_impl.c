@@ -42,7 +42,7 @@
 #include <string.h>
 
 #include "mbedtls/ed25519.h"
-#include "../common/sha512.h"
+#include "../common/ed25519_sha512.h"
 
 #include "fe.h"
 #include "ge.h"
