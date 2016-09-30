@@ -60,7 +60,10 @@ set(src_crypto
     kdf2.c
     kdf_wrap.c
     ecies.c
+    ecies_wrap.c
     ecies_envelope.c
+    fast_ec.c
+    fast_ec_wrap.c
 )
 
 set(src_x509
@@ -87,16 +90,7 @@ set(src_tls
     ssl_tls.c
 )
 
-set(src_ed25519
-    ed25519/fe.c
-    ed25519/ge.c
-    ed25519/sc.c
-    ed25519/sha512.c
-    ed25519/sign.c
-    ed25519/verify.c
-    ed25519/key_exchange.c
-    ed25519/curve25519.c
-)
+add_subdirectory(ed25519)
 
 if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-declarations -Wmissing-prototypes")
@@ -150,7 +144,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.0)
 
     ## Write 'mbedtls-config-version.cmake' file
     write_basic_package_version_file(
-            ${version_config} VERSION 2.2.1 COMPATIBILITY SameMajorVersion)
+            ${version_config} VERSION 2.3.0 COMPATIBILITY SameMajorVersion)
 
     ## Configure 'mbedtls-config.cmake' file
     configure_package_config_file(
@@ -195,19 +189,19 @@ endif(USE_STATIC_MBEDTLS_LIBRARY)
 
 if(USE_SHARED_MBEDTLS_LIBRARY)
     add_library(ed25519 SHARED ${src_ed25519})
-    set_target_properties(ed25519 PROPERTIES VERSION 2.2.1 SOVERSION 0)
+    set_target_properties(ed25519 PROPERTIES VERSION 2.3.0 SOVERSION 0)
     target_link_libraries(ed25519 ${libs})
 
     add_library(mbedcrypto SHARED ${src_crypto})
-    set_target_properties(mbedcrypto PROPERTIES VERSION 2.2.1 SOVERSION 0)
+    set_target_properties(mbedcrypto PROPERTIES VERSION 2.3.0 SOVERSION 0)
     target_link_libraries(mbedcrypto ${libs} ed25519)
 
     add_library(mbedx509 SHARED ${src_x509})
-    set_target_properties(mbedx509 PROPERTIES VERSION 2.2.1 SOVERSION 0)
+    set_target_properties(mbedx509 PROPERTIES VERSION 2.3.0 SOVERSION 0)
     target_link_libraries(mbedx509 ${libs} mbedcrypto)
 
     add_library(mbedtls SHARED ${src_tls})
-    set_target_properties(mbedtls PROPERTIES VERSION 2.2.1 SOVERSION 10)
+    set_target_properties(mbedtls PROPERTIES VERSION 2.3.0 SOVERSION 10)
     target_link_libraries(mbedtls ${libs} mbedx509)
 
     if(CMAKE_VERSION VERSION_LESS 3.0)
