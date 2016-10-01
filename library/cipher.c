@@ -278,15 +278,6 @@ int mbedtls_cipher_update( mbedtls_cipher_context_t *ctx, const unsigned char *i
         return( 0 );
     }
 
-#if defined(MBEDTLS_GCM_C)
-    if( ctx->cipher_info->mode == MBEDTLS_MODE_GCM )
-    {
-        *olen = ilen;
-        return mbedtls_gcm_update( (mbedtls_gcm_context *) ctx->cipher_ctx, ilen, input,
-                           output );
-    }
-#endif
-
     if ( 0 == block_size )
     {
         return MBEDTLS_ERR_CIPHER_INVALID_CONTEXT;
@@ -297,6 +288,84 @@ int mbedtls_cipher_update( mbedtls_cipher_context_t *ctx, const unsigned char *i
     {
         return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }
+
+#if defined(MBEDTLS_GCM_C)
+    if( ctx->cipher_info->mode == MBEDTLS_MODE_GCM )
+    {
+        size_t copy_len = 0;
+
+        /*
+         * If there is not enough data for a full block, cache it.
+         */
+        if( ( ctx->operation == MBEDTLS_DECRYPT && ilen + ctx->unprocessed_len <= block_size ) ||
+             ( ctx->operation == MBEDTLS_ENCRYPT && ilen + ctx->unprocessed_len < block_size ) )
+        {
+            memcpy( &( ctx->unprocessed_data[ctx->unprocessed_len] ), input,
+                    ilen );
+
+            ctx->unprocessed_len += ilen;
+            return( 0 );
+        }
+
+        /*
+         * Process cached data first
+         */
+        if( ctx->unprocessed_len != 0 )
+        {
+            copy_len = block_size - ctx->unprocessed_len;
+
+            memcpy( &( ctx->unprocessed_data[ctx->unprocessed_len] ), input,
+                    copy_len );
+
+            ctx->unprocessed_len += copy_len;
+
+            if( 0 != ( ret = mbedtls_gcm_update( (mbedtls_gcm_context *) ctx->cipher_ctx,
+                    ctx->unprocessed_len, ctx->unprocessed_data, output ) ) )
+            {
+                return( ret );
+            }
+
+            *olen += block_size;
+            output += block_size;
+            ctx->unprocessed_len = 0;
+
+            input += copy_len;
+            ilen -= copy_len;
+        }
+
+        /*
+         * Cache final, incomplete block
+         */
+        if( 0 != ilen )
+        {
+            copy_len = ilen % block_size;
+            if( copy_len == 0 && ctx->operation == MBEDTLS_DECRYPT )
+                copy_len = block_size;
+
+            memcpy( ctx->unprocessed_data, &( input[ilen - copy_len] ),
+                    copy_len );
+
+            ctx->unprocessed_len += copy_len;
+            ilen -= copy_len;
+        }
+
+        /*
+         * Process remaining full blocks
+         */
+        if( ilen )
+        {
+            if( 0 != ( ret = mbedtls_gcm_update( (mbedtls_gcm_context *) ctx->cipher_ctx,
+                    ilen, input, output ) ) )
+            {
+                return( ret );
+            }
+
+            *olen += ilen;
+        }
+
+        return( 0 );
+    }
+#endif /* MBEDTLS_GCM_C */
 
 #if defined(MBEDTLS_CIPHER_MODE_CBC)
     if( ctx->cipher_info->mode == MBEDTLS_MODE_CBC )
@@ -614,7 +683,6 @@ int mbedtls_cipher_finish( mbedtls_cipher_context_t *ctx,
 
     if( MBEDTLS_MODE_CFB == ctx->cipher_info->mode ||
         MBEDTLS_MODE_CTR == ctx->cipher_info->mode ||
-        MBEDTLS_MODE_GCM == ctx->cipher_info->mode ||
         MBEDTLS_MODE_STREAM == ctx->cipher_info->mode )
     {
         return( 0 );
@@ -627,6 +695,16 @@ int mbedtls_cipher_finish( mbedtls_cipher_context_t *ctx,
 
         return( 0 );
     }
+
+#if defined(MBEDTLS_GCM_C)
+    if( MBEDTLS_MODE_GCM == ctx->cipher_info->mode )
+    {
+        /* cipher block */
+        *olen = ctx->unprocessed_len;
+        return mbedtls_gcm_update( (mbedtls_gcm_context *) ctx->cipher_ctx,
+                ctx->unprocessed_len, ctx->unprocessed_data, output );
+    }
+#endif /* MBEDTLS_GCM_C */
 
 #if defined(MBEDTLS_CIPHER_MODE_CBC)
     if( MBEDTLS_MODE_CBC == ctx->cipher_info->mode )
@@ -644,7 +722,7 @@ int mbedtls_cipher_finish( mbedtls_cipher_context_t *ctx,
                 return( 0 );
             }
 
-            ctx->add_padding( ctx->unprocessed_data, mbedtls_cipher_get_iv_size( ctx ),
+            ctx->add_padding( ctx->unprocessed_data, mbedtls_cipher_get_block_size( ctx ),
                     ctx->unprocessed_len );
         }
         else if( mbedtls_cipher_get_block_size( ctx ) != ctx->unprocessed_len )
@@ -676,10 +754,11 @@ int mbedtls_cipher_finish( mbedtls_cipher_context_t *ctx,
         *olen = mbedtls_cipher_get_block_size( ctx );
         return( 0 );
     }
-#else
-    ((void) output);
 #endif /* MBEDTLS_CIPHER_MODE_CBC */
 
+#if !defined(MBEDTLS_MODE_CBC) && !defined(MBEDTLS_MODE_GCM)
+    ((void) output);
+#endif
     return( MBEDTLS_ERR_CIPHER_FEATURE_UNAVAILABLE );
 }
 
