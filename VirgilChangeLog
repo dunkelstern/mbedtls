@@ -1,0 +1,12 @@
+Virgil Security ChangeLog (Sorted per version, date)
+
+= Virgil Security 2.0.0 released 2016-09-30
+
+Features
+  * Implement Ed25519 and X25519 key parse and key write [draft-ietf-curdle-pkix-01]
+  * Implement EdDSA [draft-irtf-cfrg-eddsa-08]
+  * Implement X25519 [RFC7748]
+  * Add AMD64 optimizations for Ed25519 library
+
+Changes
+  * Make ECIES algorithm agnostic to a PK keypair
