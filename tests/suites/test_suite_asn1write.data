@@ -67,11 +67,14 @@ mbedtls_asn1_write_int:-16:"0201F0":3:3
 ASN.1 Write Integer #4 (Big negative)
 mbedtls_asn1_write_int:-231451016:"0204F2345678":6:6
 
-ASN.1 Write Integer #5 (Buffer too small for tag)
+ASN.1 Write Integer #5 (Big positive)
+mbedtls_asn1_write_int:305419896:"020412345678":6:6
+
+ASN.1 Write Integer #6 (Buffer too small for tag)
 mbedtls_asn1_write_int:-231451016:"0204F2345678":5:MBEDTLS_ERR_ASN1_BUF_TOO_SMALL
 
-ASN.1 Write Integer #6 (Buffer too small for len)
+ASN.1 Write Integer #7 (Buffer too small for len)
 mbedtls_asn1_write_int:-231451016:"0204F2345678":4:MBEDTLS_ERR_ASN1_BUF_TOO_SMALL
 
-ASN.1 Write Integer #7 (Buffer too small for integer)
+ASN.1 Write Integer #8 (Buffer too small for integer)
 mbedtls_asn1_write_int:-231451016:"0204F2345678":3:MBEDTLS_ERR_ASN1_BUF_TOO_SMALL
