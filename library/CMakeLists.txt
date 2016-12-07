@@ -15,6 +15,7 @@ set(src_crypto
     ccm.c
     cipher.c
     cipher_wrap.c
+    cmac.c
     ctr_drbg.c
     des.c
     dhm.c
@@ -80,7 +81,7 @@ set(src_x509
 
 set(src_tls
     debug.c
-    net.c
+    net_sockets.c
     ssl_cache.c
     ssl_ciphersuites.c
     ssl_cli.c
@@ -144,7 +145,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.0)
 
     ## Write 'mbedtls-config-version.cmake' file
     write_basic_package_version_file(
-            ${version_config} VERSION 2.3.0 COMPATIBILITY SameMajorVersion)
+            ${version_config} VERSION 2.4.0 COMPATIBILITY SameMajorVersion)
 
     ## Configure 'mbedtls-config.cmake' file
     configure_package_config_file(
@@ -189,19 +190,19 @@ endif(USE_STATIC_MBEDTLS_LIBRARY)
 
 if(USE_SHARED_MBEDTLS_LIBRARY)
     add_library(ed25519 SHARED ${src_ed25519})
-    set_target_properties(ed25519 PROPERTIES VERSION 2.3.0 SOVERSION 0)
+    set_target_properties(ed25519 PROPERTIES VERSION 2.4.0 SOVERSION 0)
     target_link_libraries(ed25519 ${libs})
 
     add_library(mbedcrypto SHARED ${src_crypto})
-    set_target_properties(mbedcrypto PROPERTIES VERSION 2.3.0 SOVERSION 0)
+    set_target_properties(mbedcrypto PROPERTIES VERSION 2.4.0 SOVERSION 0)
     target_link_libraries(mbedcrypto ${libs} ed25519)
 
     add_library(mbedx509 SHARED ${src_x509})
-    set_target_properties(mbedx509 PROPERTIES VERSION 2.3.0 SOVERSION 0)
+    set_target_properties(mbedx509 PROPERTIES VERSION 2.4.0 SOVERSION 0)
     target_link_libraries(mbedx509 ${libs} mbedcrypto)
 
     add_library(mbedtls SHARED ${src_tls})
-    set_target_properties(mbedtls PROPERTIES VERSION 2.3.0 SOVERSION 10)
+    set_target_properties(mbedtls PROPERTIES VERSION 2.4.0 SOVERSION 10)
     target_link_libraries(mbedtls ${libs} mbedx509)
 
     if(CMAKE_VERSION VERSION_LESS 3.0)
