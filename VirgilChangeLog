@@ -1,5 +1,13 @@
 Virgil Security ChangeLog (Sorted per version, date)
 
+= Virgil Security 2.0.1 released 2016-12-07
+
+Changes
+  * Update to mbed TLS version 2.4.0
+  * Replace custom implementation of support ASN.1 encoding of negative integers and integers larger than 255,
+    by applying commit https://github.com/sg2342/mbedtls/commit/b684c0ee0746c05a8e8896283ef90a09d1d0bf9d
+
+
 = Virgil Security 2.0.0 released 2016-09-30
 
 Features
