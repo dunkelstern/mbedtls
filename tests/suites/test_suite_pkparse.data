@@ -96,7 +96,7 @@ pk_parse_keyfile_rsa:"data_files/pkcs8_pbes2_pbkdf2_3des.der":"PolarSSLTes":MBED
 
 Parse RSA Key #19 (PKCS#8 encrypted v2 PBDFK2 3DES DER, no PW)
 depends_on:MBEDTLS_DES_C:MBEDTLS_SHA1_C:MBEDTLS_PKCS5_C
-pk_parse_keyfile_rsa:"data_files/pkcs8_pbes2_pbkdf2_3des.der":"":MBEDTLS_ERR_PK_KEY_INVALID_FORMAT
+pk_parse_keyfile_rsa:"data_files/pkcs8_pbes2_pbkdf2_3des.der":"":MBEDTLS_ERR_PK_PASSWORD_REQUIRED
 
 Parse RSA Key #20 (PKCS#8 encrypted v2 PBDFK2 DES)
 depends_on:MBEDTLS_DES_C:MBEDTLS_SHA1_C:MBEDTLS_PEM_PARSE_C:MBEDTLS_PKCS5_C:MBEDTLS_CIPHER_MODE_CBC
