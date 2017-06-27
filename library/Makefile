@@ -44,13 +44,15 @@ ifdef WINDOWS_BUILD
 DLEXT=dll
 endif
 
-OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
+OBJS_CRYPTO=	aead_chacha20_poly1305.o	\
+		aes.o		aesni.o		arc4.o		\
 		asn1parse.o	asn1write.o	base64.o	\
 		bignum.o	blowfish.o	camellia.o	\
-		ccm.o		cipher.o	cipher_wrap.o	\
-		cmac.o		ctr_drbg.o	des.o		\
-		dhm.o		ecdh.o		ecdsa.o		\
-		ecjpake.o	ecp.o				\
+		ccm.o		chacha20.o	cipher.o	\
+		cipher_wrap.o cmac.o				\
+		ctr_drbg.o	des.o		dhm.o		\
+		ecdh.o		ecdsa.o		ecjpake.o	\
+		ecp.o						\
 		ecp_curves.o	entropy.o	entropy_poll.o	\
 		error.o		gcm.o		havege.o	\
 		hmac_drbg.o	md.o		md2.o		\
@@ -59,6 +61,7 @@ OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
 		padlock.o	pem.o		pk.o		\
 		pk_wrap.o	pkcs12.o	pkcs5.o		\
 		pkparse.o	pkwrite.o	platform.o	\
+		poly1305.o							\
 		ripemd160.o	rsa.o		sha1.o		\
 		sha256.o	sha512.o	threading.o	\
 		timing.o	version.o			\
