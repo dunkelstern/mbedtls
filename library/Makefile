@@ -55,8 +55,9 @@ OBJS_CRYPTO=	aead_chacha20_poly1305.o	\
 		ecp.o						\
 		ecp_curves.o	entropy.o	entropy_poll.o	\
 		error.o		gcm.o		havege.o	\
-		hmac_drbg.o	md.o		md2.o		\
-		md4.o		md5.o		md_wrap.o	\
+		hmac_drbg.o	hkdf.o		md.o		\
+		md2.o		md4.o		md5.o		\
+		md_wrap.o	\
 		memory_buffer_alloc.o		oid.o		\
 		padlock.o	pem.o		pk.o		\
 		pk_wrap.o	pkcs12.o	pkcs5.o		\
