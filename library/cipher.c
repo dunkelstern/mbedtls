@@ -54,6 +54,7 @@
 #else
 #define mbedtls_calloc calloc
 #define mbedtls_free   free
+#endif
 
 #if defined(MBEDTLS_CHACHA20_C)
 #include "mbedtls/chacha20.h"
